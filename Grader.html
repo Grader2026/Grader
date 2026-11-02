@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<!--
+MIT License
+
+Copyright (c) 2026 Grader contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grader</title>
+<style>
+:root{--bg:#e4e4e4;--panel:#f3f3f3;--line:#b5b5b5;--sel:#1a6fd8;--ink:#1b1b1b;--muted:#6a6a6a;--warn:#c62828;--navy:#2d3748}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font:14px/1.35 "Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);display:flex;flex-direction:column}
+button,select,input,textarea{font:inherit}
+button{background:#f5f5f5;border:1px solid #9a9a9a;border-radius:3px;padding:6px 10px;cursor:pointer;font-weight:600;color:var(--ink)}
+button:hover:not(:disabled){background:#fff;border-color:#555}
+button:disabled{color:#999;cursor:default;font-weight:500}
+button.primary{background:var(--sel);border-color:#0f55ac;color:#fff}
+button.primary:hover{background:#2b7ef0}
+button.danger{color:var(--warn)}
+header{display:flex;gap:8px;align-items:center;padding:8px 12px;background:var(--navy);color:#fff;flex-wrap:wrap}
+header h1{font-size:16px;margin:0 8px 0 0}
+header select{padding:5px 8px;border-radius:3px;border:1px solid #888;min-width:160px}
+header button{padding:5px 10px;font-weight:500}
+header .sp{flex:1}
+#status{font-size:12.5px;opacity:.92}
+#status.act{cursor:pointer;text-decoration:underline}
+#show{display:none;position:fixed;inset:0;z-index:40;background:#fff;overflow:auto;padding:28px 48px 56px}
+#show.open{display:block}
+#showBody{max-width:1150px;margin:0 auto;font-size:16px}
+#showExit{position:fixed;top:12px;right:16px;z-index:41}
+#showBar{position:fixed;left:0;right:0;bottom:0;padding:6px 16px;background:#f1f1f1;border-top:1px solid #ccc;color:#666;font-size:13px;display:flex;justify-content:space-between}
+#lock{display:none;position:fixed;inset:0;z-index:50;background:rgba(228,228,228,.97);align-items:center;justify-content:center;cursor:pointer;text-align:center}
+#lock.open{display:flex}
+.lockbox{background:#fff;border:1px solid #999;border-radius:8px;padding:28px 40px;box-shadow:0 10px 40px rgba(0,0,0,.25);max-width:520px}
+.lockbox h2{margin:0 0 10px}
+.lockmsg{color:var(--warn);min-height:1em}
+#status.err{color:#ffb4b4}
+#app{flex:1;display:flex;min-height:0}
+#side{width:560px;flex:none;background:var(--bg);border-right:1px solid var(--line);overflow:auto;display:flex;flex-direction:column}
+#side{scrollbar-width:none;-ms-overflow-style:none}
+#side::-webkit-scrollbar{display:none}
+.sec{padding:10px}
+.row{display:grid;grid-template-columns:140px 1fr;gap:10px;align-items:start}
+.btns{display:flex;flex-direction:column;gap:5px}
+.btns hr{border:0;border-top:1px solid var(--line);margin:3px 0;width:100%}
+.grp{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#6b7280;margin:10px 0 1px;padding-bottom:3px;border-bottom:1px solid #c9ccd1}
+.btns>.grp:first-child{margin-top:0}
+#side button.active{background:#dbe8fb;border-color:#1f3a5f;box-shadow:inset 3px 0 0 #1f3a5f;color:#1f3a5f}
+#stuList{resize:none;height:auto!important;min-height:120px;contain:size}
+#side>.sec:first-of-type{flex:2 1 0;display:flex;flex-direction:column;min-height:min-content}
+#side>.sec:first-of-type .row{flex:1;min-height:0;align-items:stretch}
+#side button{padding:3px 8px}
+#side .btns{gap:3px}
+#side .btns hr{margin:2px 0}
+#side>.sec{padding:6px 8px}
+#side .atitle{font-size:17px;min-height:30px;padding:3px 8px;margin-bottom:4px}
+#side>.sec:last-of-type{flex:1;min-height:150px;display:flex;flex-direction:column}
+#side>.sec:last-of-type .row{flex:1;min-height:0}
+#side>.sec:last-of-type .row>div:last-child{display:flex;flex-direction:column;min-height:0}
+#asList{flex:1;height:auto!important;min-height:60px}
+.btns button{width:100%}
+.list{background:#fff;border:1px solid #777;height:200px;overflow:auto;padding:2px 0;user-select:none}
+.li{padding:0 8px;height:21px;line-height:21px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;break-inside:avoid}
+.list.two{column-count:2;column-gap:0;column-fill:auto;column-rule:1px solid #ddd}
+.li.sel{background:var(--sel);color:#fff}
+.li:hover:not(.sel){background:#e8f0fb}
+.bar{height:12px;background:#333;flex:none}
+.atitle{background:#fffbc9;border:1px solid #aaa;padding:6px 8px;font-size:20px;font-weight:600;margin-bottom:6px;min-height:42px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.upd{color:#0a1fb8;font-weight:700;font-size:13px;margin-bottom:3px}
+#main{flex:1;overflow:auto;padding:18px 22px;background:#fff}
+h2{margin:0 0 4px;font-size:22px}
+.head{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.head .sp{flex:1}
+.head>button{align-self:flex-start}
+.dist{margin:0 0 12px}
+.disttl{font-weight:600;margin-bottom:4px}
+.distbox{display:inline-flex;align-items:flex-end;gap:3px;padding:8px 10px 6px;border:1px solid #cfcfcf;border-radius:6px}
+.dcol{width:64px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.dn{font-size:15px;font-weight:600}
+.dbar{width:42px;background:#5b7fb5;border-bottom:1px solid #5b7fb5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.dl{font-size:13px;color:var(--muted);margin-top:2px;white-space:nowrap}
+.sub{color:var(--muted);margin:0 0 12px}
+.ovr{font-size:22px;border:2px solid var(--navy);border-radius:6px;padding:3px 14px;margin-left:8px;white-space:nowrap}
+.ovr b{font-size:26px}
+.ovr-sub{font-size:20px;line-height:1.35;color:var(--muted);text-align:left}
+.popts{margin:0 0 10px;padding:6px 10px;background:#f1f5fb;border:1px solid #c9d6ea;border-radius:4px;display:flex;gap:18px;align-items:center}
+.popts label{cursor:pointer}
+.popts.stack{flex-direction:column;align-items:stretch;gap:8px}
+.prow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px}
+.prow .pk{min-width:86px}
+.prow button{padding:3px 12px}
+.rsel{margin:0 0 14px;padding:8px 12px;background:#fff;border:1px solid #c9d6ea;border-radius:4px}
+.rsel-h{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.rsel-h button{padding:3px 9px;font-weight:500}
+.rsel-g{columns:3;column-gap:16px;max-height:210px;overflow:auto}
+.rsel-g label{display:block;cursor:pointer;white-space:nowrap;padding:1px 0}
+.rep-print{display:block;max-width:780px;margin:0 auto 26px;padding:22px 28px;background:#fff;border:1px solid #cfcfcf;box-shadow:0 1px 5px rgba(0,0,0,.18)}
+.only-print{display:none}
+#pfoot{display:none}
+.rpup{color:#1a7f37}.rpdn{color:#b42318}
+.sh{font-size:15px;margin:6px 0 6px}
+.rep-print,.rep-print *{font-family:Arial,Helvetica,sans-serif}
+.rp-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px;min-height:34px;padding-bottom:6px;border-bottom:2px solid #1f3a5f}
+.rp-logo img{max-height:60px;max-width:240px;display:block}
+.rp-teacher{font-size:16px;font-weight:600;color:#1f3a5f}
+.rp-box{display:flex;border:1.5px solid #1f3a5f;border-radius:8px;overflow:hidden;margin-bottom:18px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rp-b1{width:34%;background:#e8eef7;border-right:1.5px solid #1f3a5f;padding:8px 12px;display:flex;flex-direction:column;justify-content:space-between;min-height:92px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rp-t{font-weight:800;font-size:16px;letter-spacing:.04em;color:#1f3a5f}
+.rp-c{font-size:16px;font-weight:600}
+.rp-d{font-size:11px;color:#444}
+.rp-b2{flex:1;padding:8px 14px;display:flex;justify-content:space-between;align-items:flex-start}
+.rp-nm{font-size:24px;font-weight:700;margin-top:4px}
+.rp-rc{display:flex;flex-direction:column;align-items:flex-start}
+.rp-ov{font-size:24px;font-weight:800;color:#1f3a5f;border:2px solid #1f3a5f;border-radius:8px;padding:0 12px;line-height:1.35}
+.rp-sm{font-size:11px;color:#444;line-height:1.5;margin-top:6px;text-align:left}
+table.rp{width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:20px;font-size:13px;line-height:1.3;border:1.5px solid #1f3a5f;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.rp th,table.rp td{padding:3px 8px;text-align:left;border:0}
+table.rp tr.rp-h th{padding:7px 8px;font-size:13px;font-weight:700;line-height:1.15;background:#e8eef7;color:#1f3a5f;border-bottom:1.5px solid #1f3a5f;vertical-align:bottom;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.rp tr:not(.rp-h) td{border-bottom:1px solid #dde3ec}
+table.rp tr:not(.rp-h):nth-child(even) td{background:#f6f8fb;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+table.rp tr:last-child td{border-bottom:0}
+table.rp .rp-l{border-right:1.5px solid #1f3a5f;font-size:13px}
+table.rp tr.rp-h th.rp-l{width:34%;font-size:16px;font-weight:800;text-align:center;letter-spacing:.04em}
+table.rp .rp-s{font-size:11px;font-weight:400;letter-spacing:0;color:#444}
+table.rp .r{text-align:right;padding-right:16px}
+table.rp .c{text-align:center}
+table.rp .b{font-weight:800}
+table.rp .rpup{color:#1a7f37}
+table.rp .rpdn{color:#b42318}
+table.rp tr{page-break-inside:avoid}
+.popts .pl{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;flex:1}
+.popts>label{margin-left:auto;white-space:nowrap}
+.tbl{border-collapse:collapse;margin-bottom:18px}
+.tbl th,.tbl td{border:1px solid #cfcfcf;padding:4px 9px;vertical-align:middle}
+.tbl th{background:#efefef;text-align:center;font-weight:600}
+.tbl td.c,.tbl th.c{text-align:center}
+.classrep td:first-child,.classrep th:first-child{text-align:left}
+.tbl tr.foot td{background:#f5f5f5;font-weight:600}
+.tbl tr.clk{cursor:pointer}
+.tbl tr.clk:hover td{background:#eaf2fd}
+.tbl td.dim{color:#bbb;background:#fafafa}
+.b{font-weight:700}
+.wt,.of{font-size:11.5px;color:var(--muted);font-weight:400}
+.scell{padding:3px 8px}
+.scell .mkc{display:inline-block;white-space:nowrap;margin:2px 14px 2px 0}
+.scell input.mk{width:48px}
+.scell .of{margin-left:-3px}
+input.mk{width:58px;text-align:center;padding:3px;border:1px solid #bbb;border-radius:3px}
+input.mk:focus{outline:2px solid var(--sel);border-color:var(--sel)}
+input.mk.bad{background:#ffd6d6;border-color:var(--warn)}
+input.mk.blank{background:#fff4c2;border-color:#e0b84a}
+input.mk.over{background:#ffe08a;border:2px solid #d97706;font-weight:700;color:#7a3e00}
+a.lnk{color:#0b4fb3;cursor:pointer;text-decoration:underline}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;background:#eee;font-size:12px}
+textarea.note{width:100%;min-height:70px;padding:6px;border:1px solid #bbb;border-radius:3px;resize:vertical}
+.hint{color:var(--muted);font-size:12.5px}
+.drop{color:#b45309;font-size:11px;margin-left:3px}
+.warnbar{background:#fff8e1;border:1px solid #f0d58a;color:#7a4b00;border-radius:6px;padding:6px 10px;margin:0 0 10px}
+textarea.cm{width:100%;min-width:420px;min-height:64px;padding:6px;border:1px solid #bbb;border-radius:3px;resize:vertical;font:inherit;line-height:1.4}
+.ptext{display:none}
+tr.warn td{background:#fff8e1}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:10;align-items:center;justify-content:center}
+#modal.open{display:flex}
+.mbox{background:#fff;border-radius:6px;min-width:420px;max-width:92vw;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.mbox h3{margin:0;padding:14px 18px;border-bottom:1px solid #ddd;font-size:17px}
+.mbody{padding:14px 18px;overflow:auto}
+.mfoot{padding:12px 18px;border-top:1px solid #ddd;display:flex;justify-content:flex-end;gap:8px}
+.mbody label{display:block;font-weight:600;margin:8px 0 3px}
+.mbody input[type=text],.mbody input[type=date],.mbody textarea,.mbody select{width:100%;padding:6px;border:1px solid #aaa;border-radius:3px}
+.mbody input.n{width:80px;padding:4px;border:1px solid #aaa;border-radius:3px}
+.mbody textarea{min-height:110px}
+.mbody .strow{display:flex;gap:12px;align-items:center;margin-bottom:6px}
+.mbody .strow .stn{flex:1;min-width:280px}
+.mbody .strow label{display:inline-flex;align-items:center;gap:4px;margin:0;font-weight:600;cursor:pointer}
+#stMore{margin:4px 0 8px}
+
+.stu-rep{margin-bottom:0}
+.gridpage{background:#fff;color:#000}
+.g-head{position:relative}
+.g-title{position:absolute;left:0;top:0;text-align:center;line-height:1.15}
+.g-t1{font-size:22px;font-weight:700;margin-top:-.14em}
+.g-t2{font-size:14px}
+.g-t3{font-size:20px;font-weight:700}
+.gtbl{border-collapse:collapse;table-layout:fixed;border:2px solid #000}
+.gtbl td{border-left:1px solid #000;border-right:1px solid #000;border-top:1px solid #999;border-bottom:1px solid #999;padding:0 6px;overflow:hidden;white-space:nowrap;font-size:inherit;line-height:1.1}
+.gtbl tr.g-first td{border-bottom:1px solid #999}
+.gtbl td.g-sd{border-left:2px solid #000}
+.gtbl tr.g-lastlab td{border-bottom:2px solid #000}
+.gtbl tr.g-first td{border-top:2px solid #000}
+.gtbl td.g-lab{text-align:right;font-weight:700;padding-right:8px}
+.gtbl td.g-nm{padding-left:14px}
+@page{margin:0}
+.classrep td:first-child{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@media print{
+  #show{display:none!important}
+  .classrep th,.classrep td{padding:1.5px 7px;font-size:12px;line-height:1.15}
+  .classrep .wt{font-size:9px}
+  .classrep{margin-bottom:0}
+  .stu-rep{border:none;margin:0}
+  .ptext{display:block;white-space:pre-wrap}
+  textarea.cm{display:none}
+  tr.warn td{background:none}
+  header,#side,.noprint,button{display:none!important}
+  body{display:block;height:auto;background:#fff}
+  #app{display:block}
+  #main{overflow:visible;padding:10mm}
+  input.mk{border:none;width:auto}
+  input.mk.blank{background:none;border:none}
+  input.mk.over{background:none;border:none;font-weight:inherit;color:inherit}
+  .of{display:none}
+  .only-print{display:block!important}
+  #pfoot{position:fixed;left:0;right:0;bottom:5mm;text-align:center;font:8.5px Arial,Helvetica,sans-serif;color:#666}
+  .rep-screen{display:none!important}
+  .rep-print{max-width:none;margin:0;padding:0;border:0;box-shadow:none;background:none;font-family:Arial,Helvetica,sans-serif;color:#000}
+  .wtt{display:none!important}
+  .scell .of{display:inline}
+  .scell input.mk{width:30px;padding:0}
+  .scell .mkc{margin-right:10px}
+  .stu-rep .tbl th,.stu-rep .tbl td{padding:3px 6px;font-size:12.5px}
+  .tbl tr{page-break-inside:avoid}
+  .stu-rep{page-break-after:always}
+  .stu-rep+.stu-rep{padding-top:10mm}
+  .stu-rep:last-child{page-break-after:auto}
+  h3{page-break-after:avoid}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Grader</h1>
+  <select id="classSel" title="Class"></select>
+  <button data-act="newClass">New Class</button>
+  <select id="classMenu" title="Class Options"><option value="">Class Options</option><option value="rename">Rename Class</option><option value="teacher">Teacher Name</option><option value="drops">Mark-Drop Flag</option><option value="archive">Archive Class</option><option value="archived">Archived Classes</option><option value="del">Delete Class</option></select>
+  <button data-act="settings">Categories &amp; Weights</button>
+  <button data-act="about">About</button>
+  <span class="sp"></span>
+  <span id="status"></span>
+</header>
+<div id="app">
+  <aside id="side"></aside>
+  <main id="main"></main>
+</div>
+<div id="pfoot" class="only-print">Created with Grader</div>
+<div id="modal"></div>
+<div id="show" data-rnd="1"><button id="showExit">Exit (Esc)</button><div id="showBody"></div><div id="showBar"><span>↑ ↓ change student · Esc to exit</span><span id="showCount"></span></div></div>
+<div id="lock"><div class="lockbox"><h2>Grader</h2><p><b>Click anywhere to load your classes</b> from your Grader folder.</p><p id="lockFolder" class="hint"></p><p id="lockMsg" class="lockmsg"></p><p><a id="lockOther" href="#">Choose a different folder</a></p></div></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================= Data ================= */
+const LEGACY='gradebook-data.json', LS='gradebook-v1', LSCUR='gradebook-current';
+const uid=()=>Math.random().toString(36).slice(2,10);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const MONTHS=['Jan.','Feb.','Mar.','Apr.','May','Jun.','Jul.','Aug.','Sep.','Oct.','Nov.','Dec.'];
+
+function todayISO(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(iso){if(!iso)return '—';const p=iso.split('-');if(p.length!==3)return iso;return MONTHS[+p[1]-1]+' '+(+p[2])+', '+p[0]}
+
+function defaultCats(){
+  return [['Knowledge','K',20],['Application','A',20],['Inquiry','I',10],['Communication','C',10],['Participation','P',5],['Culminating','Cu',15],['Exam','E',20]]
+    .map(([name,abbr,weight])=>({id:uid(),name,abbr,weight}));
+}
+function newClass(name){return {id:uid(),name,categories:defaultCats(),students:[],assessments:[],notes:'',commentBank:null,comments:{}}}
+function blankDb(){const c=newClass('Class 1');return {version:1,modified:0,currentClass:c.id,classes:[c]}}
+
+let db=null, view={type:'welcome'}, selStu=null, selAss=null;
+let printOpts={avg:false,rank:false,unit:true,cat:true};
+try{const o=JSON.parse(localStorage.getItem('gradebook-printopts')||'null');if(o)printOpts={avg:!!o.avg,rank:!!o.rank,unit:o.unit!==false,cat:o.cat!==false}}catch(e){}
+const cls=()=>db.classes.find(c=>c.id===db.currentClass)||db.classes[0];
+const A=id=>cls().assessments.find(a=>a.id===id);
+const S=id=>cls().students.find(s=>s.id===id);
+function sorted(){const cmp=(x,y)=>x.localeCompare(y,undefined,{sensitivity:'base',numeric:true});return cls().students.slice().sort((a,b)=>cmp(a.last,b.last)||cmp(a.first,b.first))}
+const nm=s=>esc(s.last)+', '+esc(s.first);
+
+/* ================= Calculations ================= */
+function catPct(a,c,s){
+  const cfg=a.cats.find(x=>x.catId===c); if(!cfg)return null;
+  const m=a.marks[s]&&a.marks[s][c];
+  if(typeof m!=='number'||!isFinite(m))return null;
+  return m/cfg.outOf*100;
+}
+function assessPct(a,s){
+  let num=0,den=0;
+  for(const cfg of a.cats){const p=catPct(a,cfg.catId,s);if(p!=null){num+=p*cfg.weight;den+=cfg.weight}}
+  return den>0?num/den:null;
+}
+const unitOf=a=>String(a.unit==null?'':a.unit).trim();
+const dn=a=>unitOf(a)?'Unit '+unitOf(a)+' '+a.name:a.name;
+function unitList(){
+  const set=[...new Set(cls().assessments.map(unitOf).filter(Boolean))];
+  return set.sort((x,y)=>x.localeCompare(y,undefined,{numeric:true}));
+}
+function catAvg(s,c,unit){
+  let num=0,den=0;
+  for(const a of cls().assessments){
+    if(unit!==undefined&&unit!==null&&unit!==''&&unitOf(a)!==unit)continue;
+    const cfg=a.cats.find(x=>x.catId===c); if(!cfg)continue;
+    const p=catPct(a,c,s); if(p!=null){num+=p*cfg.weight;den+=cfg.weight}
+  }
+  return den>0?num/den:null;
+}
+function overall(s,unit){
+  let num=0,den=0;
+  for(const k of cls().categories){const p=catAvg(s,k.id,unit);if(p!=null){num+=p*k.weight;den+=k.weight}}
+  return den>0?num/den:null;
+}
+let dropPts=10;try{const v=parseFloat(localStorage.getItem('grader-droppts'));if(v>0)dropPts=v}catch(e){}
+let dropOn=false;try{dropOn=localStorage.getItem('grader-dropflag')==='1'}catch(e){}
+function unitDrop(sid){
+  const us=unitList().filter(u=>/^\d+$/.test(u)).sort((x,y)=>x-y);
+  const ms=us.map(u=>({u,m:overall(sid,u)})).filter(x=>x.m!=null);
+  if(ms.length<2)return null;
+  const p=ms[ms.length-2],l=ms[ms.length-1];
+  return p.m-l.m>=dropPts-1e-9?{from:p.u,to:l.u,a:p.m,b:l.m}:null;
+}
+function rankOf(sid,unit){
+  const mine=overall(sid,unit);if(mine==null)return null;
+  const vals=cls().students.map(s=>overall(s.id,unit)).filter(v=>v!=null);
+  return {rank:1+vals.filter(v=>v>mine+1e-9).length,n:vals.length};
+}
+function medOf(arr){const v=arr.filter(x=>x!=null).sort((a,b)=>a-b);if(!v.length)return null;const m=v.length>>1;return v.length%2?v[m]:(v[m-1]+v[m])/2}
+function avgOf(arr){const v=arr.filter(x=>x!=null);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null}
+const pfDec=x=>x==null?'':(Math.round(x*10)/10)+'%';
+const pf=pfDec;
+
+function calcText(el){
+  const d=el.dataset;
+  const pf=(classRound&&el.closest('[data-rnd]'))?(x=>x==null?'':Math.round(x)+'%'):pfDec;
+  switch(d.calc){
+    case 'apct': return pf(assessPct(A(d.a),d.s));
+    case 'cavg': return pf(catAvg(d.s,d.c));
+    case 'ucavg': return pf(catAvg(d.s,d.c,d.u));
+    case 'uovr': return pf(overall(d.s,d.u));
+    case 'uclsavg': return pf(avgOf(cls().students.map(s=>overall(s.id,d.u))));
+    case 'rank': {const r=rankOf(d.s,d.u);return r?r.rank+' of '+r.n:''}
+    case 'ovrp': return pf(overall(d.s));
+    case 'colavg': {const a=A(d.a);return pf(avgOf(cls().students.map(s=>catPct(a,d.c,s.id))))}
+    case 'aavg': {const a=A(d.a);return pf(avgOf(cls().students.map(s=>assessPct(a,s.id))))}
+    case 'cc': return pf(avgOf(cls().students.map(s=>catAvg(s.id,d.c))))
+    case 'cov': return pf(avgOf(cls().students.map(s=>overall(s.id))))
+    case 'cmed': return pf(medOf(cls().students.map(s=>overall(s.id))))
+    case 'aavgc': {const a=A(d.a);return pf(avgOf(cls().students.map(s=>assessPct(a,s.id))))}
+  }
+  return '';
+}
+let showDist=false;try{showDist=localStorage.getItem('grader-dist')==='1'}catch(e){}
+const DIST_BANDS=[['90–100',90],['80–89',80],['70–79',70],['60–69',60],['50–59',50],['<50',-Infinity]];
+function distHtml(vals,what){
+  const cnt=DIST_BANDS.map(()=>0);let n=0;
+  vals.forEach(v=>{if(v==null)return;n++;cnt[DIST_BANDS.findIndex(b=>Math.round(v)>=b[1])]++});
+  const ttl='<div class="disttl">Mark distribution'+(n?' · '+n+' student'+(n===1?'':'s'):'')+'</div>';
+  if(!n)return ttl+'<div class="hint">No marks yet.</div>';
+  const mx=Math.max(...cnt);
+  return ttl+'<div class="distbox">'+DIST_BANDS.map((b,i)=>[b,i]).reverse().map(([b,i])=>'<div class="dcol"><div class="dn">'+cnt[i]+'</div><div class="dbar" style="height:'+Math.round(cnt[i]/mx*120)+'px"></div><div class="dl">'+b[0]+'</div></div>').join('')+'</div>';
+}
+function distFor(el){
+  const c=cls();
+  if(el.dataset.a){const a=A(el.dataset.a);return a?distHtml(c.students.map(s=>assessPct(a,s.id)),'assessment %'):''}
+  return distHtml(c.students.map(s=>overall(s.id)),'overall');
+}
+const distBox=style=>'<label class="noprint" style="cursor:pointer;'+(style||'')+'"><input type="checkbox" data-dist="1" '+(showDist?'checked':'')+'> Mark distribution</label>';
+function refreshCalcs(){document.querySelectorAll('[data-calc]').forEach(el=>{if(el.dataset.calc==='dist')el.innerHTML=distFor(el);else el.textContent=calcText(el)});if(typeof updateStudentSummary==='function')updateStudentSummary()}
+
+/* ================= Persistence (one JSON file per class) ================= */
+let dirHandle=null, saveTimer=null, saving=false, again=false, lastSaved=null, fileState='local', fileMsg='';
+const fileOf={}, fileClassName={}, lastWritten={}, backedUp=new Set();
+const canFolder=typeof window.showDirectoryPicker==='function';
+
+function idbOpen(){return new Promise((res,rej)=>{const r=indexedDB.open('gradebook-handles',1);r.onupgradeneeded=()=>r.result.createObjectStore('h');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbSet(k,v){const d=await idbOpen();return new Promise((res,rej)=>{const t=d.transaction('h','readwrite');t.objectStore('h').put(v,k);t.oncomplete=res;t.onerror=()=>rej(t.error)})}
+async function idbGet(k){try{const d=await idbOpen();return await new Promise((res,rej)=>{const r=d.transaction('h').objectStore('h').get(k);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}catch(e){return null}}
+
+function setStatus(state,msg){
+  fileState=state; fileMsg=msg||'';
+  const el=$('#status'); el.className=''; el.removeAttribute('title');
+  let t='';
+  if(!canFolder)t='Saved in this browser only. Use Chrome or Edge to save class files in a folder;';
+  else if(state==='loading')t='Loading classes…';
+  else if(state==='saving')t='Saving…';
+  else if(state==='needperm')t='Waiting for access to your Grader folder…';
+  else if(state==='ok'){
+    t='Saved to folder “'+(dirHandle?dirHandle.name:'')+'” · '+db.classes.length+' class file'+(db.classes.length===1?'':'s')+' · '+(lastSaved?lastSaved.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'');
+    el.classList.add('act');el.title='Click to choose a different folder';
+  }
+  else if(state==='error'){t='Save error: '+msg+' (click to retry)';el.className='err act'}
+  else{t='Not saving to a folder yet. Click here and choose the folder this file is in.';el.classList.add('act')}
+  el.textContent=t;
+}
+
+function markDirty(){
+  db.modified=Date.now();
+  const c=cls();if(c)c.modified=db.modified;
+  try{localStorage.setItem(LS,JSON.stringify(db));localStorage.setItem(LSCUR,db.currentClass)}catch(e){}
+  clearTimeout(saveTimer);
+  if(dirHandle){setStatus('saving');saveTimer=setTimeout(saveFile,500)}else setStatus('local');
+}
+
+function safeName(n){
+  let s=String(n==null?'':n).replace(/[\\/:*?"<>|\u0000-\u001f]/g,'_').replace(/\s+/g,' ').trim().replace(/[. ]+$/,'');
+  if(!s)s='Class';
+  s=s.slice(0,100).replace(/[. ]+$/,'')||'Class';
+  if(/^(con|prn|aux|nul|com\d|lpt\d)$/i.test(s))s='_'+s;
+  return s;
+}
+const isClass=d=>!!d&&typeof d==='object'&&!Array.isArray(d)&&Array.isArray(d.students)&&Array.isArray(d.assessments)&&Array.isArray(d.categories);
+
+async function nameExists(name){
+  try{await dirHandle.getFileHandle(name);return true}
+  catch(e){if(e.name==='NotFoundError')return false;return true}
+}
+async function pickName(c){
+  const mine=fileOf[c.id];
+  if(mine&&fileClassName[c.id]===c.name)return mine;
+  const base=safeName(c.name);
+  const others=new Set(Object.entries(fileOf).filter(([id])=>id!==c.id).map(([,n])=>n.toLowerCase()));
+  for(let i=1;i<200;i++){
+    const cand=i===1?base+'.json':base+' ('+i+').json';
+    if(mine&&mine.toLowerCase()===cand.toLowerCase())return mine;
+    if(others.has(cand.toLowerCase()))continue;
+    if(!(await nameExists(cand)))return cand;
+  }
+  return base+'-'+uid()+'.json';
+}
+
+async function saveFile(){
+  if(!dirHandle){setStatus('local');return}
+  if(saving){again=true;return}
+  saving=true;
+  try{
+    if(await dirHandle.queryPermission({mode:'readwrite'})!=='granted'){setStatus('needperm');showLock();return}
+    const ids=new Set(db.classes.map(c=>c.id));
+    for(const id of Object.keys(fileOf)){
+      if(ids.has(id))continue;
+      try{await dirHandle.removeEntry(fileOf[id])}catch(e){if(e.name!=='NotFoundError')throw e}
+      delete fileOf[id];delete fileClassName[id];delete lastWritten[id];
+    }
+    for(const c of db.classes){
+      const body=JSON.stringify(c,null,2);
+      const want=await pickName(c);
+      const old=fileOf[c.id];
+      if(old===want&&lastWritten[c.id]===body)continue;
+      if(!backedUp.has(c.id)){
+        try{
+          const fh0=await dirHandle.getFileHandle(want);
+          const txt=await (await fh0.getFile()).text();
+          if(txt.trim()){const bh=await dirHandle.getFileHandle(want+'.bak',{create:true});const w0=await bh.createWritable();await w0.write(txt);await w0.close()}
+        }catch(e){}
+        backedUp.add(c.id);
+      }
+      const fh=await dirHandle.getFileHandle(want,{create:true});
+      const w=await fh.createWritable();await w.write(body);await w.close();
+      if(old&&old!==want){try{await dirHandle.removeEntry(old)}catch(e){}}
+      fileOf[c.id]=want;fileClassName[c.id]=c.name;lastWritten[c.id]=body;
+    }
+    lastSaved=new Date();setStatus('ok');
+  }catch(e){console.error(e);setStatus('error',e.message||String(e))}
+  finally{saving=false;if(again){again=false;saveFile()}}
+}
+
+async function loadFolder(interactive){
+  setStatus('loading');
+  const found=[],skipped=[];let legacy=null;
+  try{
+    for await(const [name,h] of dirHandle.entries()){
+      if(h.kind!=='file'||!/\.json$/i.test(name))continue;
+      let d;try{d=JSON.parse(await (await h.getFile()).text())}catch(e){skipped.push(name);continue}
+      if(name===LEGACY&&d&&Array.isArray(d.classes)){legacy={name,d};continue}
+      if(isClass(d))found.push({name,c:d});
+    }
+  }catch(e){console.error(e);setStatus('error',e.message||String(e));return}
+  if(legacy){
+    const have=new Set(found.map(f=>f.c.id));
+    legacy.d.classes.filter(isClass).forEach(c=>{if(!have.has(c.id))found.push({name:null,c,fromLegacy:true})});
+  }
+  [fileOf,fileClassName,lastWritten].forEach(o=>Object.keys(o).forEach(k=>delete o[k]));
+  backedUp.clear();
+  found.sort((a,b)=>(b.c.modified||0)-(a.c.modified||0));
+  const seen=new Set(),classes=[];
+  found.forEach(f=>{
+    const c=f.c;let fresh=!!f.fromLegacy;
+    if(!c.id||seen.has(c.id)){c.id=uid();fresh=true}
+    seen.add(c.id);
+    if(!c.name)c.name=f.name?f.name.replace(/\.json$/i,''):'Class';
+    if(f.name){fileOf[c.id]=f.name;fileClassName[c.id]=c.name}
+    if(!fresh)lastWritten[c.id]=JSON.stringify(c,null,2);
+    classes.push(c);
+  });
+  if(classes.length){
+    if(interactive){
+      const extra=db.classes.filter(m=>!seen.has(m.id)&&((m.students&&m.students.length)||(m.assessments&&m.assessments.length)||m.commentBank));
+      if(extra.length&&confirm('This browser also holds '+extra.length+' class(es) that are not in this folder:\n\n'+extra.map(x=>'• '+x.name).join('\n')+'\n\nOK = copy them into the folder too.\nCancel = leave them out.'))extra.forEach(c=>classes.push(c));
+    }
+    classes.sort((a,b)=>String(a.name).localeCompare(String(b.name),undefined,{numeric:true}));
+    db.classes=classes;
+    let cur=null;try{cur=localStorage.getItem(LSCUR)}catch(e){}
+    db.currentClass=classes.some(c=>c.id===cur)?cur:classes[0].id;ensureActive();
+  }
+  selStu=null;selAss=null;view={type:'welcome'};
+  try{localStorage.setItem(LS,JSON.stringify(db))}catch(e){}
+  renderAll();
+  await saveFile();
+  if(legacy&&fileState==='ok')await retireLegacy(legacy);
+  if(skipped.length){if(interactive)alert('These .json files in the folder could not be read and were skipped:\n\n'+skipped.join('\n'));else console.warn('Skipped unreadable files:',skipped)}
+}
+
+async function retireLegacy(l){
+  try{
+    const ids=new Set(db.classes.map(c=>c.id));
+    if(!l.d.classes.filter(isClass).every(c=>ids.has(c.id)))return;
+    const h=await dirHandle.getFileHandle(l.name);
+    const txt=await (await h.getFile()).text();
+    const b=await dirHandle.getFileHandle(l.name+'.bak',{create:true});
+    const w=await b.createWritable();await w.write(txt);await w.close();
+    await dirHandle.removeEntry(l.name);
+  }catch(e){console.warn('Could not retire the old single-file data:',e)}
+}
+
+function showLock(msg){
+  const el=$('#lock');el.classList.add('open');
+  $('#lockMsg').textContent=msg||'';
+  $('#lockFolder').textContent=dirHandle?'Folder: “'+dirHandle.name+'”':'';
+  document.querySelectorAll('header,#app').forEach(e=>{e.inert=true});
+}
+function hideLock(){
+  $('#lock').classList.remove('open');
+  document.querySelectorAll('header,#app').forEach(e=>{e.inert=false});
+}
+async function unlock(){
+  if(!dirHandle)return;
+  try{
+    const p=await dirHandle.requestPermission({mode:'readwrite'});
+    if(p==='granted'){hideLock();await loadFolder(false);return}
+    showLock('Access was not allowed. Click to try again.');
+  }catch(e){showLock('Could not open the folder ('+(e.message||e)+'). Click to try again, or choose the folder again.')}
+}
+async function connectFolder(){
+  if(!canFolder){alert('This browser cannot save to a folder. Use Chrome or Edge.');return}
+  try{
+    const h=await window.showDirectoryPicker({mode:'readwrite',id:'gradebook'});
+    dirHandle=h;await idbSet('dir',h);hideLock();
+    await loadFolder(true);
+  }catch(e){if(e.name!=='AbortError')alert('Could not open the folder: '+(e.message||e))}
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest('#lock')){
+    if(e.target.id==='lockOther'){e.preventDefault();connectFolder()}else unlock();
+    return;
+  }
+  if(e.target.closest('#status')&&canFolder){
+    if(fileState==='error')saveFile();
+    else if(fileState==='ok'){if(confirm('Save to a different folder?\n\nYour classes are currently loaded from and saved to “'+(dirHandle?dirHandle.name:'')+'”.'))connectFolder()}
+    else if(fileState==='local')connectFolder();
+  }
+});
+
+/* ================= Modal ================= */
+function modal(title,body,ok,okLabel){
+  const m=$('#modal');
+  m.onclick=null;
+  m.innerHTML='<div class="mbox"><h3>'+title+'</h3><div class="mbody">'+body+'</div><div class="mfoot"><button class="cancel">Cancel</button><button class="primary ok">'+(okLabel||'Save')+'</button></div></div>';
+  m.classList.add('open');
+  const close=()=>{m.classList.remove('open');m.innerHTML='';m.onclick=null};
+  m.querySelector('.cancel').onclick=close;
+  m.querySelector('.ok').onclick=()=>{if(ok(m)!==false)close()};
+  m.onkeydown=e=>{
+    if(e.key==='Escape')close();
+    else if(e.key==='Enter'&&e.target.tagName==='INPUT'&&e.target.type!=='checkbox'){e.preventDefault();m.querySelector('.ok').click()}
+  };
+  const f=m.querySelector('input[type=text],textarea,input,select');if(f)f.focus();
+  return close;
+}
+
+function catsForm(a){
+  const c=cls();
+  return '<label>Categories for this assessment</label><table class="tbl"><tr><th></th><th>Category</th><th>Out of</th><th>Weight</th></tr>'+
+    c.categories.map(k=>{
+      const cf=a&&a.cats.find(x=>x.catId===k.id);
+      return '<tr><td><input type="checkbox" class="cc" data-c="'+k.id+'" '+(cf?'checked':'')+'></td><td>'+esc(k.name)+' ['+esc(k.abbr)+']</td>'+
+        '<td><input class="n co" data-c="'+k.id+'" type="text" value="'+(cf?cf.outOf:10)+'"></td>'+
+        '<td><input class="n cw" data-c="'+k.id+'" type="text" value="'+(cf?cf.weight:1)+'"></td></tr>';
+    }).join('')+'</table>';
+}
+function readCats(m){
+  const out=[];let bad=false;
+  m.querySelectorAll('.cc').forEach(cb=>{
+    if(!cb.checked)return;
+    const id=cb.dataset.c;
+    const o=parseFloat(m.querySelector('.co[data-c="'+id+'"]').value);
+    const w=parseFloat(m.querySelector('.cw[data-c="'+id+'"]').value);
+    if(!(o>0)||!(w>=0)){bad=true}
+    out.push({catId:id,outOf:o,weight:w});
+  });
+  if(!out.length){alert('Select at least one category.');return null}
+  if(bad){alert('“Out of” must be greater than 0 and “Weight” must be 0 or more.');return null}
+  return out;
+}
+
+/* ================= Actions ================= */
+function openAssessModal(edit){
+  const a=edit?A(selAss):null;
+  if(edit&&!a){alert('Select an assessment first.');return}
+  modal(edit?'Edit Assessment':'New Assessment',
+    '<div style="display:flex;gap:12px"><div style="width:110px"><label>Unit #</label><input type="text" id="aUnit" value="'+esc(a?unitOf(a):'')+'" placeholder="1"></div>'+
+    '<div style="flex:1"><label>Name (e.g. Quiz, Test, Project)</label><input type="text" id="aName" value="'+esc(a?a.name:'')+'"></div></div>'+
+    '<label>Date</label><input type="date" id="aDate" value="'+(a?a.date:todayISO())+'">'+catsForm(a),
+    m=>{
+      const name=m.querySelector('#aName').value.trim();
+      if(!name){alert('Please enter a name.');return false}
+      const unit=m.querySelector('#aUnit').value.trim();
+      const cats=readCats(m);if(!cats)return false;
+      const date=m.querySelector('#aDate').value||todayISO();
+      if(a){a.name=name;a.unit=unit;a.date=date;a.cats=cats}
+      else{const n={id:uid(),name,unit,date,cats,marks:{},updated:null};cls().assessments.push(n);selAss=n.id}
+      view={type:'assess'};markDirty();renderAll();
+    });
+  $('#modal .mbox').style.width='min(520px,92vw)';
+}
+function openMultiUpd(){
+  const as=cls().assessments;
+  if(!as.length){alert('Create an assessment first.');return}
+  const opts=sel=>as.map((a,i)=>'<option value="'+i+'" '+(sel===i?'selected':'')+'>'+(i+1)+'. '+esc(dn(a))+'</option>').join('');
+  modal('Multiple Update – enter marks for several assessments',
+    '<label>From</label><select id="muFrom">'+opts(0)+'</select><label>To</label><select id="muTo">'+opts(as.length-1)+'</select>',
+    m=>{
+      let f=+m.querySelector('#muFrom').value,t=+m.querySelector('#muTo').value;
+      if(f>t)[f,t]=[t,f];
+      view={type:'multi',ids:as.slice(f,t+1).map(a=>a.id)};renderMain();
+    },'Open');
+}
+function normGender(g){
+  g=String(g||'').trim();
+  if(/^(m|male)$/i.test(g))return 'M';
+  if(/^(f|female)$/i.test(g))return 'F';
+  return g;
+}
+function parseStudentLine(l){
+  let namePart=l,gender='';
+  if(l.includes('\t')){const t=l.split('\t');namePart=t[0].trim();gender=(t[1]||'').trim()}
+  else if(l.includes(',')){
+    const p=l.split(',').map(x=>x.trim());
+    if(p.length>=3){namePart=p[0]+', '+p[1];gender=p[2]}
+    else if(/^(male|female)$/i.test(p[1])||(/^[mf]$/i.test(p[1])&&/\s/.test(p[0]))){namePart=p[0];gender=p[1]}
+  }
+  let first,last;
+  if(namePart.includes(',')){const k=namePart.indexOf(',');last=namePart.slice(0,k).trim();first=namePart.slice(k+1).trim()}
+  else{const w=namePart.split(/\s+/);last=w.length>1?w.pop():'';first=w.join(' ')}
+  return {id:uid(),first,last,gender:normGender(gender),notes:''};
+}
+function openAddStudents(){
+  const rowHtml=()=>'<div class="strow"><input type="text" class="stn" autocomplete="off"><label title="Male"><input type="checkbox" class="stg" data-g="M"> M</label><label title="Female"><input type="checkbox" class="stg" data-g="F"> F</label></div>';
+  modal('Add Students','<label>Student name — “Last, First” or “First Last”. Tick M or F for gender (optional).</label>'+
+    '<div id="stRows">'+rowHtml()+'</div><button type="button" id="stMore">+ Add another student</button>'+
+    '<p class="hint">Press Enter after each name to start the next student. Press Enter on an empty name to finish. You can also paste a whole list of names.</p>',
+    m=>{
+      let last=null,n=0;
+      m.querySelectorAll('.strow').forEach(r=>{
+        const name=r.querySelector('.stn').value.trim();if(!name)return;
+        const s=parseStudentLine(name);
+        const g=r.querySelector('.stg:checked');if(g)s.gender=g.dataset.g;
+        cls().students.push(s);last=s.id;n++;
+      });
+      if(!n){alert('Enter at least one student name.');return false}
+      selStu=last;view={type:'student'};markDirty();renderAll();
+    },'Add');
+  const m=$('#modal'),box=m.querySelector('#stRows');
+  const addRow=after=>{
+    const d=document.createElement('div');d.innerHTML=rowHtml();const row=d.firstChild;
+    if(after&&after.nextSibling)box.insertBefore(row,after.nextSibling);else box.appendChild(row);
+    return row;
+  };
+  m.querySelector('#stMore').onclick=()=>addRow(null).querySelector('.stn').focus();
+  box.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&e.target.classList.contains('stn')&&e.target.value.trim()){
+      e.preventDefault();e.stopPropagation();
+      addRow(e.target.closest('.strow')).querySelector('.stn').focus();
+    }
+  });
+  box.addEventListener('change',e=>{
+    const t=e.target;
+    if(!t.classList.contains('stg')||!t.checked)return;
+    t.closest('.strow').querySelectorAll('.stg').forEach(o=>{if(o!==t)o.checked=false});
+  });
+  box.addEventListener('paste',e=>{
+    const t=e.target;if(!t.classList.contains('stn'))return;
+    const text=(e.clipboardData||window.clipboardData).getData('text');
+    if(!/[\r\n]/.test(text))return;
+    e.preventDefault();
+    const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+    if(!lines.length)return;
+    t.value=lines[0];
+    let row=t.closest('.strow');
+    lines.slice(1).forEach(l=>{row=addRow(row);row.querySelector('.stn').value=l});
+  });
+}
+function openEditStudent(){
+  const s=S(selStu);if(!s){alert('Select a student first.');return}
+  modal('Edit Student','<label>First name</label><input type="text" id="sFirst" value="'+esc(s.first)+'"><label>Last name</label><input type="text" id="sLast" value="'+esc(s.last)+'"><label>Gender</label><input type="text" id="sGender" value="'+esc(s.gender||'')+'">',
+    m=>{
+      const f=m.querySelector('#sFirst').value.trim(),l=m.querySelector('#sLast').value.trim();
+      if(!f&&!l)return false;
+      s.first=f;s.last=l;s.gender=m.querySelector('#sGender').value.trim();markDirty();renderAll();
+    });
+}
+function delStudent(){
+  const s=S(selStu);if(!s){alert('Select a student first.');return}
+  if(!confirm('Delete '+s.first+' '+s.last+' and all of their marks?'))return;
+  const c=cls();
+  c.students=c.students.filter(x=>x.id!==s.id);
+  c.assessments.forEach(a=>delete a.marks[s.id]);
+  if(c.comments)delete c.comments[s.id];
+  selStu=null;if(view.type==='student')view={type:'welcome'};
+  markDirty();renderAll();
+}
+function delAssess(){
+  const a=A(selAss);if(!a){alert('Select an assessment first.');return}
+  if(!confirm('Delete “'+dn(a)+'” and all of its marks?'))return;
+  const c=cls();c.assessments=c.assessments.filter(x=>x.id!==a.id);
+  selAss=null;if(view.type==='assess'||view.type==='multi')view={type:'welcome'};
+  markDirty();renderAll();
+}
+function openSettings(){
+  let tmp=cls().categories.map(x=>({...x}));
+  const body=()=>'<table class="tbl"><tr><th>Category</th><th>Abbr.</th><th>Overall weight</th><th></th></tr>'+
+    tmp.map((k,i)=>'<tr><td><input type="text" class="sn" data-i="'+i+'" value="'+esc(k.name)+'"></td><td><input type="text" class="n sa" data-i="'+i+'" value="'+esc(k.abbr)+'"></td><td><input type="text" class="n sw" data-i="'+i+'" value="'+k.weight+'"></td><td><button data-del="'+i+'" class="danger">✕</button></td></tr>').join('')+
+    '</table><button id="addCat">+ Add category</button><p class="hint" id="wTotal"></p><p class="hint">Weights are relative (they don’t have to add up to 100). If a student has no marks yet in a category, that category is left out of their overall mark instead of counting as zero.</p>';
+  const sync=m=>{
+    m.querySelectorAll('.sn').forEach(i=>tmp[+i.dataset.i].name=i.value);
+    m.querySelectorAll('.sa').forEach(i=>tmp[+i.dataset.i].abbr=i.value);
+    m.querySelectorAll('.sw').forEach(i=>tmp[+i.dataset.i].weight=parseFloat(i.value));
+  };
+  const total=m=>{
+    let t=0;m.querySelectorAll('.sw').forEach(i=>{const v=parseFloat(i.value);if(v>0)t+=v});
+    const el=m.querySelector('#wTotal');if(el)el.textContent='Total weight: '+(Math.round(t*10)/10);
+  };
+  const m=$('#modal');
+  modal('Categories & overall weighting','<div id="setBody">'+body()+'</div>',mm=>{
+    sync(mm);
+    for(const k of tmp){
+      if(!k.name.trim()||!k.abbr.trim()){alert('Every category needs a name and an abbreviation.');return false}
+      if(!(k.weight>=0)){alert('Weights must be numbers, 0 or more.');return false}
+    }
+    const c=cls();
+    const keep=new Set(tmp.map(k=>k.id));
+    c.assessments.forEach(a=>{
+      a.cats=a.cats.filter(x=>keep.has(x.catId));
+      Object.values(a.marks).forEach(mk=>Object.keys(mk).forEach(id=>{if(!keep.has(id))delete mk[id]}));
+    });
+    c.categories=tmp.map(k=>({id:k.id,name:k.name.trim(),abbr:k.abbr.trim(),weight:k.weight}));
+    markDirty();renderAll();
+  });
+  total(m);
+  m.oninput=e=>{if(e.target.classList.contains('sw'))total(m)};
+  m.addEventListener('focusin',e=>{const t=e.target;if(t.tagName==='INPUT'&&(t.value==='New category'||(t.classList.contains('sa')&&t.value==='N')))setTimeout(()=>t.select(),0)});
+  m.onclick=e=>{
+    const t=e.target;
+    if(t.id==='addCat'){sync(m);tmp.push({id:uid(),name:'New category',abbr:'N',weight:10});m.querySelector('#setBody').innerHTML=body();total(m);const ns=m.querySelectorAll('.sn');if(ns.length){const l=ns[ns.length-1];l.focus();l.select()}}
+    else if(t.dataset&&t.dataset.del!==undefined){
+      sync(m);const i=+t.dataset.del;
+      const k=tmp[i];
+      const used=cls().assessments.some(a=>a.cats.some(x=>x.catId===k.id));
+      if(used&&!confirm('Assessments use “'+k.name+'”. Deleting it removes it (and its marks) from those assessments when you save. Continue?'))return;
+      tmp.splice(i,1);m.querySelector('#setBody').innerHTML=body();total(m);
+    }
+  };
+}
+/* ---- Spreadsheet import (.xlsx / .csv / .tsv) ---- */
+async function inflateRaw(bytes){
+  const ds=new DecompressionStream('deflate-raw');
+  return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(ds)).arrayBuffer());
+}
+async function unzip(buf){
+  const u8=new Uint8Array(buf),dv=new DataView(buf),td=new TextDecoder();
+  let eocd=-1;
+  for(let i=u8.length-22;i>=Math.max(0,u8.length-66000);i--){if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}}
+  if(eocd<0)throw new Error('This is not a valid .xlsx file.');
+  const n=dv.getUint16(eocd+10,true);let p=dv.getUint32(eocd+16,true);
+  const files={};
+  for(let k=0;k<n;k++){
+    if(dv.getUint32(p,true)!==0x02014b50)break;
+    const method=dv.getUint16(p+10,true),csize=dv.getUint32(p+20,true);
+    const nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),lo=dv.getUint32(p+42,true);
+    const name=td.decode(u8.subarray(p+46,p+46+nl));
+    const ln=dv.getUint16(lo+26,true),le=dv.getUint16(lo+28,true),start=lo+30+ln+le;
+    files[name]={method,data:u8.subarray(start,start+csize)};
+    p+=46+nl+el+cl;
+  }
+  const read=async name=>{
+    const f=files[name];if(!f)return null;
+    const bytes=f.method===0?f.data:await inflateRaw(f.data);
+    return td.decode(bytes);
+  };
+  return {files,read};
+}
+function colIndex(ref){const m=/^([A-Z]+)/i.exec(ref||'');if(!m)return 0;let n=0;for(const ch of m[1].toUpperCase())n=n*26+ch.charCodeAt(0)-64;return n-1}
+async function readXlsxRows(buf){
+  const z=await unzip(buf);
+  const parse=t=>new DOMParser().parseFromString(t,'application/xml');
+  const texts=el=>Array.from(el.getElementsByTagName('t')).map(x=>x.textContent).join('');
+  let shared=[];
+  const sst=await z.read('xl/sharedStrings.xml');
+  if(sst)shared=Array.from(parse(sst).getElementsByTagName('si')).map(texts);
+  let sheetName=z.files['xl/worksheets/sheet1.xml']?'xl/worksheets/sheet1.xml':Object.keys(z.files).filter(k=>/^xl\/worksheets\/[^/]+\.xml$/.test(k)).sort()[0];
+  if(!sheetName)throw new Error('No worksheet found in this file.');
+  const doc=parse(await z.read(sheetName));
+  const rows=[];
+  Array.from(doc.getElementsByTagName('row')).forEach(r=>{
+    const row=[];
+    Array.from(r.getElementsByTagName('c')).forEach(c=>{
+      const t=c.getAttribute('t'),v=c.getElementsByTagName('v')[0];
+      let val='';
+      if(t==='s')val=v?(shared[+v.textContent]||''):'';
+      else if(t==='inlineStr')val=texts(c);
+      else if(v){val=v.textContent;if(/^-?\d+(\.\d+)?[eE]\+?\d+$/.test(val))val=String(Math.round(Number(val)))}
+      row[colIndex(c.getAttribute('r'))]=String(val).trim();
+    });
+    const arr=Array.from(row,x=>x==null?'':x),ri=parseInt(r.getAttribute('r'),10);
+    if(ri>0)rows[ri-1]=arr;else rows.push(arr);
+  });
+  return Array.from(rows,x=>x||[]);
+}
+function readDelimitedRows(text){
+  const first=text.split(/\r?\n/)[0]||'';
+  const d=first.includes('\t')?'\t':',';
+  const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){if(ch==='"'){if(text[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}
+    else if(ch==='"')q=true;
+    else if(ch===d){row.push(cur.trim());cur=''}
+    else if(ch==='\n'||ch==='\r'){if(ch==='\r'&&text[i+1]==='\n')i++;row.push(cur.trim());rows.push(row);row=[];cur=''}
+    else cur+=ch;
+  }
+  if(cur!==''||row.length){row.push(cur.trim());rows.push(row)}
+  return rows;
+}
+function studentsFromRows(rows){
+  rows=rows.filter(r=>r.some(x=>x&&String(x).trim()));
+  let ni=0,gi=1,ii=-1,start=0;
+  const h=rows[0]||[];
+  const find=re=>h.findIndex(x=>re.test(String(x||'').trim()));
+  const n=find(/^(student\s*)?name$/i);
+  if(n>=0){
+    ni=n;start=1;
+    const g=find(/^gender|^sex$/i),i=find(/^(student\s*)?(id|number)|^id$/i);
+    gi=g;ii=i;
+  }
+  const out=[];
+  for(let r=start;r<rows.length;r++){
+    const row=rows[r];const raw=String(row[ni]||'').trim();if(!raw)continue;
+    let last,first;
+    if(raw.includes(',')){const k=raw.indexOf(',');last=raw.slice(0,k).trim();first=raw.slice(k+1).trim()}
+    else{const w=raw.split(/\s+/);last=w.length>1?w.pop():'';first=w.join(' ')}
+    out.push({id:uid(),first,last,gender:gi>=0?String(row[gi]||'').trim():'',notes:''});
+  }
+  return out;
+}
+async function parseStudentFile(file){
+  const name=file.name.toLowerCase();
+  let rows;
+  if(/\.xlsx$/.test(name)){
+    if(typeof DecompressionStream!=='function')throw new Error('This browser cannot read .xlsx files. Use a current Chrome or Edge, or save the sheet as .csv.');
+    rows=await readXlsxRows(await file.arrayBuffer());
+  }else if(/\.(csv|tsv|txt)$/.test(name)){
+    rows=readDelimitedRows(await file.text());
+  }else throw new Error('Please choose an .xlsx (or .csv) file.');
+  const st=studentsFromRows(rows);
+  if(!st.length)throw new Error('No students were found. Expected columns: Name, Gender, Id with Name as “Last, First”.');
+  return st;
+}
+function newClassAct(){
+  let parsed=null,bank=null,busy=false,busyB=false;
+  const close=modal('New Class',
+    '<label>Class name</label><input type="text" id="ncName">'+
+    '<label>Load students from a PowerSchool Excel file (.xlsx) (optional)</label>'+
+    '<input type="file" id="ncFile" accept=".xlsx">'+
+    '<p class="hint">Columns: <b>Name</b> and <b>Gender</b>, with Name written as “Last, First”. A header row is detected automatically.</p>'+
+    '<p id="ncInfo" class="hint"></p>'+
+    '<label>Load report-card comments (optional)</label><input type="file" id="ncBank" accept=".xlsx,.csv,.tsv,.txt">'+
+    '<p class="hint">Your comment spreadsheet for this course (chapter sentences and grade-range comments).</p><p id="ncBankInfo" class="hint"></p>',
+    m=>{
+      const name=m.querySelector('#ncName').value.trim();
+      if(!name){alert('Please enter a class name.');return false}
+      if(busy||busyB){alert('Still reading the file. Try again in a moment.');return false}
+      if(m.querySelector('#ncBank').files.length&&!bank){alert('The comments file could not be read. Fix it or clear the file selection.');return false}
+      if(m.querySelector('#ncFile').files.length&&!parsed){alert('The chosen file could not be read, so no students would be added. Fix it or clear the file selection.');return false}
+      const c=newClass(name);
+      c.categories=cls().categories.map(k=>({...k,id:uid()}));
+      if(parsed)c.students=parsed;
+      if(bank)c.commentBank=bank;
+      db.classes.push(c);db.currentClass=c.id;selStu=null;selAss=null;view={type:'welcome'};markDirty();renderAll();
+    },'Create');
+  const m=$('#modal');
+  m.querySelector('#ncFile').addEventListener('change',async e=>{
+    const f=e.target.files[0],info=m.querySelector('#ncInfo');
+    parsed=null;info.style.color='';
+    if(!f){info.textContent='';return}
+    busy=true;info.textContent='Reading…';
+    try{
+      parsed=await parseStudentFile(f);
+      const sample=parsed.slice(0,3).map(x=>x.last+', '+x.first).join(' · ');
+      info.textContent=parsed.length+' student(s) found: '+sample+(parsed.length>3?' …':'');
+    }catch(err){info.textContent=err.message||String(err);info.style.color='#c62828'}
+    busy=false;
+  });
+  m.querySelector('#ncBank').addEventListener('change',async e=>{
+    const f=e.target.files[0],info=m.querySelector('#ncBankInfo');
+    bank=null;info.style.color='';
+    if(!f){info.textContent='';return}
+    busyB=true;info.textContent='Reading…';
+    try{bank=await parseCommentFile(f);info.innerHTML=bankSummary(bank)}
+    catch(err){info.textContent=err.message||String(err);info.style.color='#c62828'}
+    busyB=false;
+  });
+}
+function teacherOf(c){return c.teacher!==undefined?String(c.teacher):reportCfg.teacher}
+function setTeacher(){
+  const c=cls(),n=prompt('Teacher name (printed at the top right of student reports):',teacherOf(c));
+  if(n===null)return;
+  c.teacher=n.trim();markDirty();renderMain();
+}
+function renameClass(){const n=prompt('Class name:',cls().name);if(!n||!n.trim())return;cls().name=n.trim();markDirty();renderAll()}
+const isRO=()=>!!(cls()&&cls().archived);
+const RO_ACTS=['settings','addStudents','editStudent','delStudent','newAssess','editAssess','delAssess','multiUpd','importComments','genAll'];
+function ensureActive(){const c=db.classes.find(x=>x.id===db.currentClass);if(c&&c.archived){const a=db.classes.find(x=>!x.archived);if(a)db.currentClass=a.id}}
+function goClass(id){db.currentClass=id;selStu=null;selAss=null;view={type:'welcome'};markDirty();renderAll()}
+function archiveClass(){
+  const c=cls();if(c.archived){alert('This class is already archived.');return}
+  const other=db.classes.find(x=>!x.archived&&x.id!==c.id);
+  if(!other){alert('Create another class first. At least one active class is needed.');return}
+  if(!confirm('Archive “'+c.name+'”?\n\nIts data is kept, but it will no longer appear in the class list. You can find it under Class Options → Archived Classes.'))return;
+  c.archived=Date.now();markDirty();goClass(other.id);
+}
+function restoreClass(id){const c=db.classes.find(x=>x.id===id);if(!c)return;delete c.archived;db.currentClass=id;markDirty();renderAll()}
+function dropSettings(){
+  modal('Mark-Drop Flag','<label style="cursor:pointer"><input type="checkbox" id="dropToggle" '+(dropOn?'checked':'')+'> Flag students whose mark dropped (▼) in the student list</label><p>Flag drops of <input type="number" id="dropPts" min="1" max="100" step="1" value="'+dropPts+'" style="width:56px"> points or more between consecutive units.</p>',()=>{},'Close');
+  $('#modal .cancel').remove();
+}
+function showArchived(){
+  const list=db.classes.filter(c=>c.archived).sort((a,b)=>b.archived-a.archived);
+  modal('Archived Classes',list.length?'<table class="tbl" style="width:100%">'+list.map(c=>'<tr><td>'+esc(c.name)+'<div class="hint">Archived '+esc(fmtDate(new Date(c.archived).toISOString().slice(0,10)))+' · '+c.students.length+' student(s)</div></td><td style="white-space:nowrap;text-align:right"><button data-arc-open="'+c.id+'">Open</button> <button data-arc-restore="'+c.id+'">Restore</button></td></tr>').join('')+'</table><p class="hint">Open shows the class read-only. Restore returns it to the class list.</p>':'<p>No archived classes.</p>',()=>{},'Close');
+  const m=$('#modal');m.querySelector('.cancel').remove();
+  m.querySelectorAll('[data-arc-open]').forEach(b=>b.onclick=()=>{m.querySelector('.ok').click();goClass(b.dataset.arcOpen)});
+  m.querySelectorAll('[data-arc-restore]').forEach(b=>b.onclick=()=>{m.querySelector('.ok').click();restoreClass(b.dataset.arcRestore)});
+}
+function delClass(){
+  if(db.classes.length<2){alert('You need at least one class.');return}
+  if(!confirm('Delete the class “'+cls().name+'” and all its students and marks?'))return;
+  db.classes=db.classes.filter(c=>c.id!==db.currentClass);db.currentClass=(db.classes.find(c=>!c.archived)||db.classes[0]).id;
+  selStu=null;selAss=null;view={type:'welcome'};markDirty();renderAll();
+}
+
+/* ---- Report comments ---- */
+const ukey=u=>/^\d+$/.test(String(u))?String(+u):String(u);
+const levelFor=m=>m>=80?'a thorough':m>=70?'a considerable':m>=60?'some':'a limited';
+const cleanTxt=x=>String(x==null?'':x).replace(/\s+/g,' ').trim();
+function parseCommentBank(rows){
+  const r1=rows[0]||[];
+  const width=Math.max(0,...rows.map(r=>(r||[]).length));
+  // the grade-range row: the first row below the headings whose filled cells are all short ranges like "80-90"
+  const isRange=t=>t.length<=40&&/\d+(?:\.\d+)?\s*[-–—]\s*\d+(?:\.\d+)?|under|below|less than|</i.test(t);
+  let rr=-1;
+  for(let r=1;r<rows.length&&rr<0;r++){
+    const cells=(rows[r]||[]).map(cleanTxt).filter(Boolean);
+    if(cells.length&&cells.every(isRange))rr=r;
+  }
+  if(rr<0)rr=2;
+  const units={},ranges=[];
+  for(let col=0;col<width;col++){
+    const m=/(\d+)/.exec(cleanTxt(r1[col]));
+    if(m){
+      const opts=[];
+      for(let r=1;r<rr;r++){const o=cleanTxt((rows[r]||[])[col]);if(o)opts.push(o)}
+      if(opts.length)units[String(+m[1])]=opts;
+    }
+    const lab=cleanTxt((rows[rr]||[])[col]),nums=lab.match(/\d+(?:\.\d+)?/g);
+    if(nums){
+      const low=/under|below|less|</i.test(lab)?0:Math.min(...nums.map(Number));
+      const options=[];
+      for(let r=rr+1;r<rows.length;r++){const o=cleanTxt((rows[r]||[])[col]);if(o)options.push(o)}
+      if(options.length)ranges.push({label:lab,low,options});
+    }
+  }
+  if(!Object.keys(units).length)throw new Error('No unit comments found. Row 1 should have headings such as “Unit 1”, with the comments for each unit in the rows below it.');
+  if(!ranges.length)throw new Error('No grade-range comments found. A row below the unit comments should have ranges such as “80-90”, with the comment options in the rows below it.');
+  return {units,ranges};
+}
+async function parseCommentFile(file){
+  const name=file.name.toLowerCase();let rows;
+  if(/\.xlsx$/.test(name)){
+    if(typeof DecompressionStream!=='function')throw new Error('This browser cannot read .xlsx files. Use a current Chrome or Edge, or save the sheet as .csv.');
+    rows=await readXlsxRows(await file.arrayBuffer());
+  }else if(/\.(csv|tsv|txt)$/.test(name))rows=readDelimitedRows(await file.text());
+  else throw new Error('Please choose an .xlsx (or .csv) file.');
+  const bank=parseCommentBank(rows);bank.source=file.name;bank.imported=todayISO();return bank;
+}
+function bankSummary(b){
+  return '<b>'+esc(b.source||'comments')+'</b> · units with comments: '+Object.keys(b.units).sort((x,y)=>x-y).map(u=>u+' ('+(Array.isArray(b.units[u])?b.units[u].length:1)+')').join(', ')+' · grade ranges: '+
+    b.ranges.slice().sort((x,y)=>y.low-x.low).map(r=>esc(r.label)+' ('+r.options.length+' option'+(r.options.length===1?'':'s')+')').join(', ');
+}
+function fillTemplate(t,s,level){
+  const g=/^m/i.test(String(s.gender||'').trim())?'m':/^f/i.test(String(s.gender||'').trim())?'f':'';
+  const P={he:{m:'he',f:'she'},his:{m:'his',f:'her'},him:{m:'him',f:'her'},himself:{m:'himself',f:'herself'}};
+  return t.replace(/\((name|level|he|his|him|himself)\)/gi,(m0,k)=>{
+    const key=k.toLowerCase();let r;
+    if(key==='name')r=s.first;else if(key==='level')r=level;else r=g?P[key][g]:null;
+    if(r==null||r==='')return m0;
+    if(k[0]!==k[0].toLowerCase())r=r[0].toUpperCase()+r.slice(1);
+    return r;
+  });
+}
+const unitOpts=(bank,u)=>{const v=bank&&bank.units[ukey(u)];return Array.isArray(v)?v:(v?[v]:[])};
+function bestUnitInfo(s){
+  const bank=cls().commentBank;let best=null,ties=[];
+  if(!bank)return {best,ties};
+  unitList().forEach(u=>{
+    if(!/^\d+$/.test(String(u).trim())||!unitOpts(bank,u).length)return;
+    const m=overall(s.id,u);if(m==null)return;
+    if(best===null||m>best.m+1e-9){best={u,m};ties=[best]}
+    else if(Math.abs(m-best.m)<=1e-9)ties.push({u,m});
+  });
+  return {best,ties};
+}
+function bandIndexFor(bank,ov){
+  const bands=bank.ranges.map((r,i)=>({r,i})).sort((a,b)=>b.r.low-a.r.low);
+  if(!bands.length)return -1;
+  const ovr=Math.round(ov);
+  return (bands.find(b=>ovr>=b.r.low)||bands[bands.length-1]).i;
+}
+function commentStale(s){
+  const c=cls(),cm=c.comments&&c.comments[s.id],bank=c.commentBank;
+  if(!bank||!cm||!cm.text)return false;
+  const ov=overall(s.id);if(ov==null)return false;
+  const {ties}=bestUnitInfo(s);
+  const unitOk=!ties.length||ties.some(t=>String(t.u)===String(cm.unit));
+  const bandOk=(cm.band==null?-1:cm.band)===bandIndexFor(bank,ov);
+  return !(unitOk&&bandOk);
+}
+function autoFillComments(){
+  const c=cls();if(!c.commentBank)return;
+  const pools={};let n=0;
+  sorted().forEach(s=>{
+    const cm=c.comments&&c.comments[s.id];if(cm&&cm.text)return;
+    const r=genComment(s,pools);if(r){(c.comments=c.comments||{})[s.id]=r;n++}
+  });
+  if(n)markDirty();
+}
+function genComment(s,pools,prev){
+  const bank=cls().commentBank;if(!bank)return null;
+  const ov=overall(s.id);if(ov==null)return null;
+  let {best,ties}=bestUnitInfo(s);
+  if(ties.length>1)best=ties[Math.floor(Math.random()*ties.length)];
+  // each student rolls their own random option (re-rolling one student avoids repeating their current option)
+  const pick=(key,n,prevOpt)=>{
+    let o=Math.floor(Math.random()*n);
+    if(prevOpt!=null&&prevOpt>=0&&n>1)while(o===prevOpt)o=Math.floor(Math.random()*n);
+    return o;
+  };
+  const parts=[];let uopt=-1;
+  if(best){
+    const uo=unitOpts(bank,best.u);
+    uopt=pick('u'+ukey(best.u),uo.length,prev&&String(prev.unit)===String(best.u)?prev.uopt:null);
+    parts.push(fillTemplate(uo[uopt],s,levelFor(Math.round(best.m))));
+  }
+  const bands=bank.ranges.map((r,i)=>({r,i})).sort((a,b)=>b.r.low-a.r.low);
+  const ovr=Math.round(ov);
+  let bi=-1,opt=-1;
+  if(bands.length){
+    const band=bands.find(b=>ovr>=b.r.low)||bands[bands.length-1];
+    bi=band.i;
+    opt=pick('b'+bi,band.r.options.length,prev&&prev.band===bi?prev.opt:null);
+    parts.push(fillTemplate(band.r.options[opt],s,levelFor(ovr)));
+  }
+  return {text:parts.join(' '),unit:best?String(best.u):'',uopt,band:bi,opt};
+}
+function sizeTa(t){t.style.height='auto';t.style.height=Math.max(64,t.scrollHeight+2)+'px'}
+function importComments(){
+  const i=document.createElement('input');i.type='file';i.accept='.xlsx,.csv,.tsv,.txt';
+  i.onchange=async()=>{
+    const f=i.files[0];if(!f)return;
+    try{const b=await parseCommentFile(f);cls().commentBank=b;markDirty();renderMain()}
+    catch(e){alert(e.message||String(e))}
+  };
+  i.click();
+}
+function generateAllComments(){
+  const c=cls();if(!c.commentBank)return;
+  c.comments=c.comments||{};
+  if(Object.values(c.comments).some(x=>x&&x.text)&&!confirm('Replace all existing comments, including any you have edited?'))return;
+  const pools={};
+  sorted().forEach(s=>{const r=genComment(s,pools);if(r)c.comments[s.id]=r;else delete c.comments[s.id]});
+  markDirty();renderMain();
+}
+function regenComment(sid){
+  const c=cls(),s=S(sid);if(!s)return;
+  c.comments=c.comments||{};
+  const r=genComment(s,null,c.comments[sid]);
+  if(!r){alert('This student has no marks yet.');return}
+  c.comments[sid]=r;markDirty();renderMain();
+}
+async function copyText(t){
+  try{await navigator.clipboard.writeText(t);return true}
+  catch(e){
+    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
+    let ok=false;try{ok=document.execCommand('copy')}catch(_){}ta.remove();return ok;
+  }
+}
+async function copyComments(sid){
+  const c=cls();const list=sid?[S(sid)]:sorted();
+  const lines=list.filter(s=>s&&c.comments&&c.comments[s.id]&&c.comments[s.id].text).map(s=>c.comments[s.id].text);
+  const ok=lines.length&&await copyText(lines.join('\n'));
+  const el=$('#status');el.className='';el.textContent=ok?'Copied '+lines.length+' comment'+(lines.length===1?'':'s')+' to the clipboard.':'Nothing to copy yet.';
+  setTimeout(()=>setStatus(fileState,fileMsg),2500);
+}
+const rp=x=>x==null?'':Math.round(x)+'%';
+function viewComments(){
+  const c=cls(),st=sorted(),bank=c.commentBank;c.comments=c.comments||{};
+  let h=head('Report Comments',
+    '<button data-act="importComments">'+(bank?'Re-import comments':'Import comments')+'</button>'+
+    (bank?'<button data-act="genAll">Reroll All</button><button data-act="copyAll">Copy all</button><button data-act="print">Print</button>':''),
+    esc(c.name));
+  if(!bank)return h+'<p>Import your comment spreadsheet (.xlsx) for this course. Layout:</p><ol>'+
+    '<li><b>Row 1</b>: chapter headings (“Ch. 1”, “Ch. 2”…). The number must match the unit number on your assessments.</li>'+
+    '<li><b>Row 2</b>: the sentence for each chapter, e.g. “(Name) demonstrates (level) understanding of …”.</li>'+
+    '<li><b>Row 3</b>: grade ranges (“Grade Range 90-100”, “80-90”, “70-80”, …). The lower number is the cut-off.</li>'+
+    '<li><b>Row 4 and below</b>: alternative comments for that range. One is picked at random per student. Add as many rows as you like.</li></ol>'+
+    '<p class="hint">Placeholders: (Name), (level), (he), (his), (him), (himself). “(level)” becomes a thorough (80+), a considerable (70–79), some (60–69) or a limited (under 60). Pronouns follow the Gender from your PowerSchool import; if a student has no M/F gender, pronouns are left as typed so you can fix them by hand.</p>';
+  h+='<p class="hint noprint">Comment bank: '+bankSummary(bank)+'. Each comment = the sentence for the student’s highest unit + a random comment for their overall mark. Marks are rounded to whole percents for ranges and “(level)”.</p>';
+  if(!st.length)return h+'<p>No students yet.</p>';
+  h+='<table class="tbl"><tr><th>#</th><th>Student</th><th class="c">Overall</th><th class="c">Unit used</th><th>Comment</th><th class="noprint"></th></tr>';
+  st.forEach((s,i)=>{
+    const cm=c.comments[s.id],ov=overall(s.id),gOk=/^[mf]/i.test(String(s.gender||'').trim());
+    const txt=cm?cm.text:'';
+    h+='<tr class="'+(gOk?'':'warn')+'"><td>'+(i+1)+'</td><td>'+nm(s)+(gOk?'':'<div class="hint" style="color:#b45309">No M/F gender: fix pronouns by hand</div>')+'</td>'+
+      '<td class="c b">'+(ov==null?'':Math.round(ov)+'%')+'</td>'+
+      '<td class="c">'+(cm&&cm.unit?'Unit '+esc(cm.unit)+' ('+rp(overall(s.id,cm.unit))+')':'')+'</td>'+
+      '<td><textarea class="cm" data-cm="'+s.id+'" placeholder="'+(ov==null?'No marks yet':'Click New')+'">'+esc(txt)+'</textarea><div class="ptext">'+esc(txt)+'</div>'+(commentStale(s)?'<div class="hint noprint" style="color:#b45309">⚠ Marks have changed since this comment was written. Click New to update it.</div>':'')+'</td>'+
+      '<td class="noprint"><button data-regen="'+s.id+'" title="Pick a different random comment">New</button> <button data-copy="'+s.id+'">Copy</button></td></tr>';
+  });
+  return h+'</table>';
+}
+
+/* ================= Rendering ================= */
+function renderHeader(){
+  $('#classSel').innerHTML=db.classes.filter(c=>!c.archived||c.id===db.currentClass).map(c=>'<option value="'+c.id+'" '+(c.id===db.currentClass?'selected':'')+'>'+esc(c.name)+(c.archived?' (archived)':'')+'</option>').join('');
+  document.body.classList.toggle('ro',!!(cls()&&cls().archived));
+}
+let stuH=null,asH=300,stuR=0,asR=0;
+document.addEventListener('mouseup',()=>{
+  const sl=$('#stuList'),al=$('#asList');
+  if(sl){const h=parseInt(sl.style.height);if(h&&h!==stuR){stuH=h;stuR=h}}
+  if(al){const h=parseInt(al.style.height);if(h&&h!==asR){asH=h;asR=h}}
+});
+const ACTIVE_BTN={class:'classReport',allStudents:'allReports',grid:'printGrid',notes:'notes',comments:'comments'};
+function markActive(){document.querySelectorAll('#side [data-act]').forEach(b=>{b.classList.toggle('active',ACTIVE_BTN[view.type]===b.dataset.act);if(isRO()&&RO_ACTS.includes(b.dataset.act))b.disabled=true})}
+function renderSide(){
+  const c=cls(),st=sorted(),as=c.assessments,a=A(selAss);
+  const old=$('#side');const sl=old.querySelector('#stuList'),al=old.querySelector('#asList');
+  const s1=sl?sl.scrollTop:0,s2=al?al.scrollTop:0;
+  const fa=document.activeElement,focusId=fa&&(fa.id==='stuList'||fa.id==='asList')?fa.id:null;
+  old.innerHTML=
+  '<div class="sec"><div class="row"><div class="btns">'+
+    '<button data-act="classReport">Class Report</button>'+
+    '<button data-act="allReports">Student Reports</button>'+
+    '<button data-act="printGrid">Print Grid</button>'+
+    '<hr>'+
+    '<button data-act="notes">Notes</button>'+
+    '<button data-act="comments">Report Comments</button>'+
+    '<hr>'+
+    '<button data-act="addStudents">Add Students</button>'+
+    '<button data-act="editStudent" '+(selStu?'':'disabled')+'>Edit Student</button>'+
+    '<button data-act="delStudent" '+(selStu?'':'disabled')+'>Delete Student</button>'+
+  '</div><div class="list two" id="stuList" tabindex="0" style="height:'+(stuH||(Math.max(10,Math.ceil(st.length/2))*21+6))+'px">'+
+    st.map((s,i)=>'<div class="li '+(s.id===selStu?'sel':'')+'" data-stu="'+s.id+'" title="'+nm(s)+(dropTip(s.id)?' — '+dropTip(s.id):'')+'">'+(i+1)+'. '+nm(s)+(dropTip(s.id)?' <span class="drop">▼</span>':'')+'</div>').join('')+
+  '</div></div></div><div class="bar"></div>'+
+  '<div class="sec"><div class="atitle">'+(a?esc(dn(a)):'No assessment selected')+'</div>'+
+  '<div class="row"><div class="btns">'+
+    '<button data-act="newAssess">New</button>'+
+    '<button data-act="editAssess" '+(a?'':'disabled')+'>Edit</button>'+
+    '<button data-act="delAssess" '+(a?'':'disabled')+'>Delete</button>'+
+    '<button data-act="multiUpd" '+(as.length?'':'disabled')+'>Multiple Update</button>'+
+  '</div><div><div class="upd">Updated: '+(a?fmtDate(a.updated):'—')+'</div><div class="list" id="asList" tabindex="0" style="height:'+asH+'px">'+
+    as.map((x,i)=>'<div class="li '+(x.id===selAss?'sel':'')+'" data-as="'+x.id+'">'+(i+1)+'. '+esc(dn(x))+'  ['+x.cats.map(k=>{const cc=c.categories.find(y=>y.id===k.catId);return cc?esc(cc.abbr):'?'}).join(',')+']</div>').join('')+
+  '</div></div></div></div>';
+  $('#stuList').scrollTop=s1;$('#asList').scrollTop=s2;
+  ['#stuList','#asList'].forEach(q=>{const sel=$(q).querySelector('.li.sel');if(sel){const L=$(q),t=sel.offsetTop,b=t+sel.offsetHeight;if(t<L.scrollTop)L.scrollTop=t;else if(b>L.scrollTop+L.clientHeight)L.scrollTop=b-L.clientHeight}});
+  if(focusId)$('#'+focusId).focus({preventScroll:true});
+  stuR=parseInt($('#stuList').style.height)||0;asR=parseInt($('#asList').style.height)||0;
+  markActive();
+}
+function head(title,extra,sub){
+  return '<div class="head"><h2>'+title+'</h2><span class="sp"></span>'+(extra||'')+'</div>'+(sub?'<p class="sub">'+sub+'</p>':'');
+}
+function inp(a,c,s,row,col){
+  const m=a.marks[s]&&a.marks[s][c];const cfg=a.cats.find(x=>x.catId===c);
+  return '<input class="mk'+(typeof m==='number'&&m>cfg.outOf?' over':'')+(typeof m==='number'?'':' blank')+'"'+(typeof m==='number'&&m>cfg.outOf?' title="Higher than the out-of value ('+cfg.outOf+')"':'')+' data-a="'+a.id+'" data-c="'+c+'" data-s="'+s+'" data-row="'+row+'" data-col="'+col+'" value="'+(typeof m==='number'?m:'')+'" autocomplete="off"><span class="of"> /'+cfg.outOf+'</span>';
+}
+const catTh=k=>'<th class="c">'+esc(k.abbr)+'<div class="wt">'+esc(k.name)+'</div></th>';
+
+function dropTip(sid){if(!dropOn)return '';const d=unitDrop(sid);return d?'Unit '+d.from+' ('+Math.round(d.a)+'%) → Unit '+d.to+' ('+Math.round(d.b)+'%)':''}
+function viewWelcome(){
+  const c=cls();
+  return head('Welcome')+
+  '<p>Class: <b>'+esc(c.name)+'</b> — '+c.students.length+' student(s), '+c.assessments.length+' assessment(s).</p>'+
+  '<ol><li>Set your categories and their weights under <b>Categories &amp; Weights</b> (top bar).</li>'+
+  '<li>Add your students with <b>Add Students</b>.</li>'+
+  '<li>Create an assessment with <b>New</b>. Choose the categories it covers, and set the “out of” and weight for each.</li>'+
+  '<li>Click an <b>assessment</b> to enter marks for every student, or click a <b>student</b> to view and edit all of their marks. Use <b>Multiple Update</b> to enter several assessments in one grid. Blank marks are highlighted in yellow and are left out of the averages.</li>'+
+  '<li>Use <b>Class Report</b> for averages, <b>Student Reports</b> and <b>Print Grid</b> for printouts, and <b>Report Comments</b> for report card comments.</li>'+
+  '<li>When a course is finished, use <b>Class Options → Archive Class</b> to keep it without showing it in your class list.</li></ol>'+
+  '<p class="hint">Saving: each class is saved as its own file named after the class (for example “'+esc(safeName(c.name))+'.json”). Put grader.html in its own folder, open it in Chrome or Edge, click the message at the top (“Not saving to a folder yet…”) and choose that same folder. After that, every class file in the folder loads automatically.</p>';
+}
+function printOptsBar(){
+  return '<div class="noprint popts"><div class="pl"><b>Show on report:</b> '+
+    '<label><input type="checkbox" data-popt="avg" '+(printOpts.avg?'checked':'')+'> Class average</label>'+
+    '<label><input type="checkbox" data-popt="rank" '+(printOpts.rank?'checked':'')+'> Rank</label>'+
+    '<label><input type="checkbox" data-popt="unit" '+(printOpts.unit?'checked':'')+'> Results by unit</label>'+
+    '<label><input type="checkbox" data-popt="cat" '+(printOpts.cat?'checked':'')+'> Results by category</label>'+
+    '<button data-act="reportHdr" title="School Logo for Printed Reports">School Logo</button>'+
+    '</div>'+roundBox()+'</div>';
+}
+const repExcl=new Set();
+function viewAllStudents(){
+  const st=sorted();
+  const sel=st.filter(s=>!repExcl.has(s.id));
+  let h='<div class="noprint">'+head('Student Reports','<button data-act="showMode" title="Show one student at a time (arrow keys to switch)">Show</button><button data-act="print" '+(sel.length?'':'disabled')+'>Print</button>','One report per page. Tick the students to print; “Show” displays one student at a time, so a student can see only their own marks.')+printOptsBar()+'</div>';
+  if(!st.length)return h+'<p>No students yet.</p>';
+  h+='<div class="noprint rsel"><div class="rsel-h"><b>Students to print</b> <span class="hint">('+sel.length+' of '+st.length+')</span>'+
+    '<button data-act="repAll">Select all</button><button data-act="repNone">Select none</button></div>'+
+    '<div class="rsel-g">'+st.map(s=>'<label><input type="checkbox" data-rsel="'+s.id+'" '+(repExcl.has(s.id)?'':'checked')+'> '+nm(s)+'</label>').join('')+'</div></div>';
+  if(!sel.length)return h+'<p>No students selected.</p>';
+  return h+sel.map(s=>'<div class="stu-rep">'+viewStudent(s.id,true)+'</div>').join('');
+}
+function stuData(sid){
+  const c=cls(),s=S(sid);
+  const ents=[];let n=0;
+  c.assessments.forEach(a=>{c.categories.forEach(k=>{
+    const cfg=a.cats.find(x=>x.catId===k.id);if(!cfg)return;
+    n++;const p=catPct(a,k.id,s.id),m=a.marks[s.id]&&a.marks[s.id][k.id];
+    ents.push({n,a,k,cfg,p,m:typeof m==='number'?m:null,has:p!=null,unit:unitOf(a)});
+  })});
+  const got=ents.filter(e=>e.has),catW={},catEntW={};
+  got.forEach(e=>{catEntW[e.k.id]=(catEntW[e.k.id]||0)+e.cfg.weight;catW[e.k.id]=e.k.weight});
+  const catSum=Object.keys(catW).reduce((q,id)=>q+catW[id],0);
+  ents.forEach(e=>{e.wf=e.has&&catSum>0&&catEntW[e.k.id]>0?100*(e.k.weight/catSum)*(e.cfg.weight/catEntW[e.k.id]):null;e.ca=avgOf(c.students.map(x=>catPct(e.a,e.k.id,x.id)))});
+  const rows=ents.slice().sort((x,y)=>{
+    if(x.unit!==y.unit){if(!x.unit)return 1;if(!y.unit)return -1;return x.unit.localeCompare(y.unit,undefined,{numeric:true})}
+    return x.n-y.n;
+  });
+  const ul=unitList().map(u=>{
+    const es=got.filter(e=>e.unit===u);if(!es.length)return null;
+    return {label:u,cnt:es.length,term:es.reduce((q,e)=>q+e.wf,0),avg:overall(s.id,u),cl:avgOf(c.students.map(x=>overall(x.id,u)))};
+  }).filter(Boolean);
+  const cl=c.categories.map(k=>{
+    const es=got.filter(e=>e.k.id===k.id);if(!es.length)return null;
+    return {label:k.abbr,cnt:es.length,term:catSum>0?100*k.weight/catSum:0,avg:catAvg(s.id,k.id),cl:avgOf(c.students.map(x=>catAvg(x.id,k.id)))};
+  }).filter(Boolean);
+  const all=c.students.map(x=>overall(x.id));
+  return {c,s,rows,ul,cl,ov:overall(s.id),cavg:avgOf(all),cmed:medOf(all),rk:rankOf(s.id)};
+}
+const sFm=x=>x==null?'':String(classRound?Math.round(x):Math.round(x*10)/10);
+const sDf=(a,b)=>{if(a==null||b==null)return '';const d=classRound?Math.round(a-b):Math.round((a-b)*10)/10;return '<span class="'+(d>0?'rpup':d<0?'rpdn':'')+'">'+(d>0?'+':'')+d+'</span>'};
+function stuResHtml(D){
+  const oa=printOpts.avg;
+  const tb=(title,list)=>{
+    let t='<table class="tbl"><tr><th>'+title+'</th><th>Entries</th><th>% of term</th><th>Student avg %</th>'+(oa?'<th>Class avg %</th><th>± Class avg</th>':'')+'</tr>';
+    list.forEach(x=>{t+='<tr><td class="c">'+esc(x.label)+'</td><td class="c">'+x.cnt+'</td><td class="c">'+sFm(x.term)+'</td><td class="c b">'+sFm(x.avg)+'</td>'+(oa?'<td class="c">'+sFm(x.cl)+'</td><td class="c">'+sDf(x.avg,x.cl)+'</td>':'')+'</tr>'});
+    return t+'</table>';
+  };
+  return (D.ul.length&&printOpts.unit?'<h3 class="sh">Results by unit</h3>'+tb('Unit',D.ul):'')+(D.cl.length&&printOpts.cat?'<h3 class="sh">Results by category</h3>'+tb('Category',D.cl):'');
+}
+function stuSumHtml(D){
+  const oa=printOpts.avg;let row=0;
+  let h='<table class="tbl"><tr><th>#</th><th>Entry</th><th>Date</th><th>Unit</th><th>Category</th><th>Wt factor</th><th>Mark</th><th>Mark %</th>'+(oa?'<th>Class avg %</th><th>± Class avg</th>':'')+'</tr>';
+  if(!D.rows.length)h+='<tr><td colspan="'+(oa?10:8)+'" class="hint">No assessments yet.</td></tr>';
+  D.rows.forEach(e=>{
+    h+='<tr><td class="c">'+e.n+'</td><td>'+esc(dn(e.a))+'</td><td class="c">'+esc(e.a.date?fmtDate(e.a.date):'')+'</td><td class="c">'+esc(e.unit)+'</td><td class="c">'+esc(e.k.abbr)+'</td>'+
+      '<td class="c" data-sk="wf'+e.n+'"></td><td class="c" style="white-space:nowrap">'+inp(e.a,e.k.id,D.s.id,row++,0)+'</td>'+
+      '<td class="c b" data-sk="mp'+e.n+'"></td>'+(oa?'<td class="c" data-sk="ca'+e.n+'"></td><td class="c" data-sk="df'+e.n+'"></td>':'')+'</tr>';
+  });
+  return h+'</table><div id="stuRes"></div>';
+}
+function updateStudentSummary(){
+  const el=document.getElementById('stuSum');if(!el)return;
+  const D=stuData(el.dataset.sid),set=(k,v,html)=>{const x=el.querySelector('[data-sk="'+k+'"]');if(x){if(html)x.innerHTML=v;else x.textContent=v}};
+  D.rows.forEach(e=>{set('mp'+e.n,sFm(e.p));set('wf'+e.n,e.wf==null?'':String(Math.round(e.wf*10)/10));set('ca'+e.n,sFm(e.ca));set('df'+e.n,sDf(e.p,e.ca),1)});
+  const r=el.querySelector('#stuRes');if(r)r.innerHTML=stuResHtml(D);
+  const rk=el.querySelector('[data-sk="rank"]');if(rk)rk.textContent=(printOpts.rank&&D.rk)?'Rank '+D.rk.rank+' of '+D.rk.n:'';
+  const st=el.querySelector('[data-sk="cls"]');if(st)st.textContent=(printOpts.avg?'Class avg '+sFm(D.cavg)+'% · Median '+sFm(D.cmed)+'%':'');
+}
+function viewStudent(sid,bulk){
+  const c=cls(),s=S(sid||selStu);if(!s)return viewWelcome();
+  if(bulk)return '<div class="rep-print" data-sid="'+s.id+'">'+reportHtml(s.id)+'</div>';
+  const D=stuData(s.id);
+  return '<div class="rep-screen noprint" id="stuSum" data-sid="'+s.id+'">'+(dropTip(s.id)?'<div class="warnbar">▼ Mark dropped: '+dropTip(s.id)+'</div>':'')+printOptsBar()+
+    head(nm(s),'<button data-act="print">Print</button><span class="ovr" data-calc="ovrp" data-s="'+s.id+'"></span>','<span data-sk="cls"></span> <span data-sk="rank" style="margin-left:10px"></span>')+
+    stuSumHtml(D)+'</div><div class="rep-print only-print" data-sid="'+s.id+'">'+reportHtml(s.id)+'</div>';
+}
+/* ---- Printed student report (PowerSchool-style layout) ---- */
+let reportCfg={teacher:'',logo:''};
+try{const r=JSON.parse(localStorage.getItem('grader-report')||'null');if(r&&typeof r==='object')reportCfg={teacher:r.teacher==null?'':String(r.teacher),logo:typeof r.logo==='string'?r.logo:''}}catch(e){}
+function saveReportCfg(){try{localStorage.setItem('grader-report',JSON.stringify(reportCfg))}catch(e){alert('The logo is too large to remember in this browser. Try a smaller image.')}}
+function reportHtml(sid){
+  const c=cls(),s=S(sid);if(!s)return '';
+  const oa=printOpts.avg,or=printOpts.rank,rnd=classRound;
+  const d1=x=>String(Math.round(x*10)/10);
+  const fm=x=>x==null?'':(rnd?String(Math.round(x)):d1(x));
+  const diff=(a,b)=>{if(a==null||b==null)return '';const d=rnd?Math.round(a-b):Math.round((a-b)*10)/10;return '<span class="'+(d>0?'rpup':d<0?'rpdn':'')+'">'+(d>0?'+':'')+d+'</span>'};
+  // entries = one per assessment x category, numbered in entry order
+  const ents=[];let n=0;
+  c.assessments.forEach(a=>{
+    c.categories.forEach(k=>{
+      const cfg=a.cats.find(x=>x.catId===k.id);if(!cfg)return;
+      n++;const p=catPct(a,k.id,s.id);
+      ents.push({n,a,k,cfg,p,has:p!=null,unit:unitOf(a)});
+    });
+  });
+  const got=ents.filter(e=>e.has);
+  const catW={},catEntW={};
+  got.forEach(e=>{catEntW[e.k.id]=(catEntW[e.k.id]||0)+e.cfg.weight;catW[e.k.id]=e.k.weight});
+  const catSum=Object.keys(catW).reduce((t,id)=>t+catW[id],0);
+  got.forEach(e=>{e.wf=catSum>0&&catEntW[e.k.id]>0?100*(e.k.weight/catSum)*(e.cfg.weight/catEntW[e.k.id]):0;e.ca=avgOf(c.students.map(x=>catPct(e.a,e.k.id,x.id)))});
+  const rows=got.slice().sort((x,y)=>{
+    const ux=x.unit,uy=y.unit;if(ux!==uy){if(!ux)return 1;if(!uy)return -1;return ux.localeCompare(uy,undefined,{numeric:true})}
+    return x.n-y.n;
+  });
+  const ov=overall(s.id),cavg=avgOf(c.students.map(x=>overall(x.id))),cmed=medOf(c.students.map(x=>overall(x.id)));
+  const rk=or?rankOf(s.id):null;
+  let h='<div class="rp-top"><div class="rp-logo">'+(reportCfg.logo?'<img src="'+reportCfg.logo+'" alt="">':'')+'</div><div class="rp-teacher">'+esc(teacherOf(c))+'</div></div>'+
+    '<div class="rp-box"><div class="rp-b1"><div class="rp-t">STUDENT REPORT</div><div class="rp-c">'+esc(c.name)+'</div><div class="rp-d">'+esc(fmtDate(todayISO()))+'</div></div>'+
+    '<div class="rp-b2"><div class="rp-nm">'+nm(s)+'</div><div class="rp-rc"><div class="rp-ov">'+(ov==null?'':fm(ov)+'%')+'</div>'+
+    ((oa||rk)?'<div class="rp-sm">'+(oa?'<div>Class Avg.: '+(cavg==null?'':fm(cavg)+'%')+'</div><div>Median: '+(cmed==null?'':fm(cmed)+'%')+'</div>':'')+(rk?'<div>Rank: '+rk.rank+' of '+rk.n+'</div>':'')+'</div>':'')+'</div></div></div>';
+  const th=(t,cl)=>'<th'+(cl?' class="'+cl+'"':'')+'>'+t+'</th>';
+  // entries
+  h+='<table class="rp"><tr class="rp-h">'+th('ENTRY TITLES','rp-l')+th('Unit','c')+th('Category','c')+th('Weight<br>Factor','r')+th('Mark %','r')+(oa?th('Class<br>Avg. %','r')+th('± Class<br>Avg. %','r'):'')+'</tr>';
+  if(!rows.length)h+='<tr><td class="rp-l" colspan="'+(oa?7:5)+'">No marks entered yet.</td></tr>';
+  rows.forEach(e=>{
+    h+='<tr><td class="rp-l">'+e.n+'. '+esc(dn(e.a))+'</td><td class="c">'+esc(e.unit)+'</td><td class="c">'+esc(e.k.abbr)+'</td><td class="r">'+d1(e.wf)+'</td><td class="r b">'+fm(e.p)+'</td>'+
+      (oa?'<td class="r">'+fm(e.ca)+'</td><td class="r">'+diff(e.p,e.ca)+'</td>':'')+'</tr>';
+  });
+  h+='</table>';
+  const sumTbl=(title,first,list)=>{
+    let t='<table class="rp rp2"><tr class="rp-h">'+th(title,'rp-l')+th('Number of<br>Entries','c')+th('% of<br>TERM','c')+th('Student<br>Average %','r')+(oa?th('Class<br>Average','r')+th('± Class<br>Average','r'):'')+'</tr>';
+    list.forEach(x=>{t+='<tr><td class="rp-l c">'+esc(x.label)+'</td><td class="c">'+x.cnt+'</td><td class="c">'+d1(x.term)+'</td><td class="r b">'+fm(x.avg)+'</td>'+(oa?'<td class="r">'+fm(x.cl)+'</td><td class="r">'+diff(x.avg,x.cl)+'</td>':'')+'</tr>'});
+    return t+'</table>';
+  };
+  const ul=unitList().map(u=>{
+    const es=got.filter(e=>e.unit===u);if(!es.length)return null;
+    return {label:u,cnt:es.length,term:es.reduce((t,e)=>t+e.wf,0),avg:overall(s.id,u),cl:avgOf(c.students.map(x=>overall(x.id,u)))};
+  }).filter(Boolean);
+  if(ul.length&&printOpts.unit)h+=sumTbl('RESULTS by UNIT','Unit',ul);
+  const cl=c.categories.map(k=>{
+    const es=got.filter(e=>e.k.id===k.id);if(!es.length)return null;
+    return {label:k.abbr,cnt:es.length,term:catSum>0?100*k.weight/catSum:0,avg:catAvg(s.id,k.id),cl:avgOf(c.students.map(x=>catAvg(x.id,k.id)))};
+  }).filter(Boolean);
+  if(cl.length&&printOpts.cat)h+=sumTbl('RESULTS by CATEGORY','Category',cl);
+  return h;
+}
+function refreshReports(){document.querySelectorAll('.rep-print[data-sid]').forEach(el=>{el.innerHTML=reportHtml(el.dataset.sid)})}
+window.addEventListener('beforeprint',()=>{refreshReports();if(view.type==='grid')fitGridNames()});
+function openReportHdr(){
+  let logo=reportCfg.logo;
+  modal('School Logo (Printed Student Reports)',
+    '<label>Logo image (top left of the report)</label><input type="file" id="rhLogo" accept="image/*"> <button type="button" id="rhClear">Remove logo</button>'+
+    '<div id="rhPrev" style="margin-top:8px;min-height:40px">'+(logo?'<img src="'+logo+'" style="max-height:60px;max-width:240px">':'<span class="hint">No logo</span>')+'</div>',
+    m=>{reportCfg={teacher:reportCfg.teacher,logo};saveReportCfg();renderMain()},'Save');
+  const m=$('#modal'),prev=m.querySelector('#rhPrev');
+  m.querySelector('#rhClear').onclick=()=>{logo='';prev.innerHTML='<span class="hint">No logo</span>';m.querySelector('#rhLogo').value=''};
+  m.querySelector('#rhLogo').onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const rd=new FileReader();
+    rd.onload=()=>{const im=new Image();im.onload=()=>{
+      const sc=Math.min(1,400/im.width,200/im.height),cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(im.width*sc));cv.height=Math.max(1,Math.round(im.height*sc));
+      cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
+      logo=cv.toDataURL('image/png');prev.innerHTML='<img src="'+logo+'" style="max-height:60px;max-width:240px">';
+    };im.onerror=()=>alert('That file could not be read as an image.');im.src=rd.result};
+    rd.readAsDataURL(f);
+  };
+}
+let assessSortMark=false,assessMissOnly=false;
+function viewAssess(){
+  const c=cls(),a=A(selAss);if(!a)return viewWelcome();
+  let st=sorted();
+  if(assessSortMark){
+    st=st.map((s,i)=>({s,i,p:assessPct(a,s.id)})).sort((x,y)=>{
+      const xn=x.p==null,yn=y.p==null;
+      if(xn!==yn)return xn?1:-1;
+      if(!xn&&Math.abs(y.p-x.p)>1e-9)return y.p-x.p;
+      return x.i-y.i;
+    }).map(x=>x.s);
+  }
+  const cfgs=a.cats.map(cf=>({cf,k:c.categories.find(x=>x.id===cf.catId)})).filter(x=>x.k);
+  const isBlank=(sid,x)=>typeof(a.marks[sid]&&a.marks[sid][x.k.id])!=='number';
+  const nMiss=st.filter(s=>cfgs.some(x=>isBlank(s.id,x))).length;
+  if(assessMissOnly)st=st.filter(s=>cfgs.some(x=>isBlank(s.id,x)));
+  let h=head(esc(dn(a)),'<button data-act="print">Print</button>',
+    fmtDate(a.date)+' · '+cfgs.map(x=>esc(x.k.name)+' (out of '+x.cf.outOf+'<span class="wtt">, weight '+x.cf.weight+'</span>)').join(' · '));
+  h+='<div class="noprint popts"><div class="pl">'+
+    '<label title="Show only students with a blank mark"><input type="checkbox" data-amiss="1" '+(assessMissOnly?'checked':'')+'> Missing only ('+nMiss+')</label>'+
+    '<label><input type="checkbox" data-asort="1" '+(assessSortMark?'checked':'')+'> Sort Marks</label>'+distBox()+'</div>'+roundBox()+'</div>';
+  if(!st.length)return h+'<p>'+(assessMissOnly?'<b>No missing marks.</b> Every student has a mark.':'No students yet.')+'</p>';
+  h+='<div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap"><div><table class="tbl"><tr><th>#</th><th>Student</th>'+cfgs.map(x=>'<th class="c">'+esc(x.k.abbr)+'<div class="wt">out of '+x.cf.outOf+'<span class="wtt"> · wt '+x.cf.weight+'</span></div></th>').join('')+'<th class="c">Assessment %</th></tr>';
+  st.forEach((s,i)=>{
+    h+='<tr><td>'+(i+1)+'</td><td><a class="lnk" data-goS="'+s.id+'">'+nm(s)+'</a></td>'+
+      cfgs.map((x,j)=>'<td class="c">'+inp(a,x.k.id,s.id,i,j)+'</td>').join('')+
+      '<td class="c b" data-calc="apct" data-s="'+s.id+'" data-a="'+a.id+'"></td></tr>';
+  });
+  h+='<tr class="foot"><td></td><td>Class average</td>'+cfgs.map(x=>'<td class="c" data-calc="colavg" data-a="'+a.id+'" data-c="'+x.k.id+'"></td>').join('')+'<td class="c" data-calc="aavg" data-a="'+a.id+'"></td></tr></table></div>'+
+    (showDist?'<div class="dist" data-calc="dist" data-a="'+a.id+'"></div>':'')+'</div>';
+  return h;
+}
+function viewMulti(){
+  const c=cls();const as=(view.ids||[]).map(A).filter(Boolean);const st=sorted();
+  if(!as.length||!st.length)return head('Multiple Update')+'<p>Nothing to show.</p>';
+  let h=head('Multiple Update','','Enter marks for several assessments at once.');
+  const groups=as.map(a=>({a,cfgs:a.cats.map(cf=>({cf,k:c.categories.find(x=>x.id===cf.catId)})).filter(x=>x.k)}));
+  h+='<table class="tbl"><tr><th rowspan="2">#</th><th rowspan="2">Student</th>'+
+    groups.map(g=>'<th colspan="'+g.cfgs.length+'"><a class="lnk" data-goA="'+g.a.id+'">'+(c.assessments.indexOf(g.a)+1)+'. '+esc(dn(g.a))+'</a></th>').join('')+'</tr><tr>'+
+    groups.map(g=>g.cfgs.map(x=>'<th class="c">'+esc(x.k.abbr)+'<div class="wt">/'+x.cf.outOf+'<span class="wtt"> · wt '+x.cf.weight+'</span></div></th>').join('')).join('')+'</tr>';
+  st.forEach((s,i)=>{
+    let col=0;
+    h+='<tr><td>'+(i+1)+'</td><td>'+nm(s)+'</td>'+groups.map(g=>g.cfgs.map(x=>'<td class="c">'+inp(g.a,x.k.id,s.id,i,col++)+'</td>').join('')).join('')+'</tr>';
+  });
+  return h+'</table>';
+}
+let classSortMark=false,classEntries=false;try{classEntries=localStorage.getItem('grader-classentries')==='1'}catch(e){}
+let classRound=false;
+const roundBox=style=>'<label title="Show marks rounded to the nearest whole number" style="'+(style||'')+'"><input type="checkbox" data-cround="1" '+(classRound?'checked':'')+'> Round</label>';
+try{classRound=localStorage.getItem('grader-classround')==='1'}catch(e){}
+let classCatHidden={};
+try{const o=JSON.parse(localStorage.getItem('grader-classcats')||'null');if(o&&typeof o==='object')classCatHidden=o}catch(e){}
+function saveClassCats(){try{localStorage.setItem('grader-classcats',JSON.stringify(classCatHidden))}catch(e){}}
+function viewClass(){
+  const c=cls();
+  let st=sorted();
+  if(classSortMark){
+    st=st.map((s,i)=>({s,i,o:overall(s.id)})).sort((x,y)=>{
+      const xn=x.o==null,yn=y.o==null;
+      if(xn!==yn)return xn?1:-1;
+      if(!xn&&Math.abs(y.o-x.o)>1e-9)return y.o-x.o;
+      return x.i-y.i;
+    }).map(x=>x.s);
+  }
+  const hid=new Set(classCatHidden[c.id]||[]);
+  const cats=c.categories.filter(k=>!hid.has(k.id));
+  let h=head('Class Report','<button data-act="print">Print</button>',esc(c.name)+' &nbsp;·&nbsp; Average <b data-calc="cov"></b> &nbsp;·&nbsp; Median <b data-calc="cmed"></b>');
+  h+='<div class="noprint popts stack">'+
+    '<div class="prow"><b class="pk">Display:</b>'+
+      '<label title="Show each assessment as a column instead of category averages"><input type="checkbox" data-centries="1" '+(classEntries?'checked':'')+'> Units</label>'+
+      '<label><input type="checkbox" data-csort="1" '+(classSortMark?'checked':'')+'> Sort Marks</label>'+distBox()+
+      roundBox('margin-left:auto')+'</div>'+
+    (classEntries?'':'<div class="prow"><b class="pk">Categories:</b>'+
+      c.categories.map(k=>'<label title="'+esc(k.name)+'"><input type="checkbox" data-ccat="'+k.id+'" '+(hid.has(k.id)?'':'checked')+'> '+esc(k.abbr)+'</label>').join('')+
+      '<button data-act="ccatAll">All</button><button data-act="ccatNone">None</button></div>')+
+    '</div>';
+  if(showDist)h+='<div class="dist" data-calc="dist"></div>';
+  if(classEntries){
+    if(!c.assessments.length||!st.length)return h+'<p>Add students and assessments first.</p>';
+    h+='<table class="tbl"><tr><th>Student</th>'+c.assessments.map((a,i)=>'<th class="c"><a class="lnk" data-goA="'+a.id+'">'+(i+1)+'. '+esc(dn(a))+'</a><div class="wt">'+c.categories.filter(k=>a.cats.some(x=>x.catId===k.id)).map(k=>esc(k.abbr)).join(',')+'</div></th>').join('')+'<th class="c">Overall</th></tr>';
+    st.forEach(s=>{h+='<tr><td><a class="lnk" data-goS="'+s.id+'">'+nm(s)+'</a></td>'+c.assessments.map(a=>'<td class="c" data-calc="apct" data-s="'+s.id+'" data-a="'+a.id+'"></td>').join('')+'<td class="c b" data-calc="ovrp" data-s="'+s.id+'"></td></tr>'});
+    return h+'<tr class="foot"><td>Class average</td>'+c.assessments.map(a=>'<td class="c" data-calc="aavg" data-a="'+a.id+'"></td>').join('')+'<td class="c" data-calc="cov"></td></tr></table>';
+  }
+  const nEq=cats.length+1,nameW=30,eqW=((100-nameW)/nEq).toFixed(3);
+  h+='<table class="tbl classrep" style="width:100%;table-layout:fixed"><colgroup><col style="width:'+nameW+'%">'+('<col style="width:'+eqW+'%">').repeat(nEq)+'</colgroup>'+
+    '<tr><th>Student</th>'+cats.map(k=>'<th class="c" title="'+esc(k.name)+'">'+esc(k.abbr)+'</th>').join('')+'<th class="c">Overall</th></tr>';
+  st.forEach((s,i)=>{
+    h+='<tr class="clk" data-goS="'+s.id+'"><td>'+nm(s)+'</td>'+
+      cats.map(k=>'<td class="c" data-calc="cavg" data-s="'+s.id+'" data-c="'+k.id+'"></td>').join('')+
+      '<td class="c b" data-calc="ovrp" data-s="'+s.id+'"></td></tr>';
+  });
+  h+='<tr class="foot"><td>Class average</td>'+cats.map(k=>'<td class="c" data-calc="cc" data-c="'+k.id+'"></td>').join('')+'<td class="c" data-calc="cov"></td></tr></table>';
+  return h;
+}
+function selPanel(st,sel,label){
+  return '<div class="noprint rsel"><div class="rsel-h"><b>'+label+'</b> <span class="hint">('+sel.length+' of '+st.length+')</span>'+
+    '<button data-act="repAll">Select all</button><button data-act="repNone">Select none</button></div>'+
+    '<div class="rsel-g">'+st.map(s=>'<label><input type="checkbox" data-rsel="'+s.id+'" '+(repExcl.has(s.id)?'':'checked')+'> '+nm(s)+'</label>').join('')+'</div></div>';
+}
+function viewNotes(){
+  const c=cls(),st=sorted(),sel=st.filter(s=>!repExcl.has(s.id));
+  let h=head('Notes','<button data-act="print">Print</button>',esc(c.name)+' — tick the students whose notes should show and print.');
+  if(st.length)h+=selPanel(st,sel,'Students to print');
+  h+='<h3>Class notes</h3><textarea class="note" data-note="class">'+esc(c.notes)+'</textarea>';
+  h+='<h3>Student notes</h3>'+(sel.length?sel.map(s=>'<p style="margin:10px 0 3px"><b>'+nm(s)+'</b></p><textarea class="note" data-note="'+s.id+'">'+esc(s.notes||'')+'</textarea>').join(''):'<p class="hint">No students selected.</p>');
+  return h;
+}
+/* ---- Print grid ---- */
+let gridOpts={lab1:'Category',lab2:'Out Of',lab3:'',nlab:2,nsec:1,labB:'Entry',teacher:'',term:'Term',cols:15,extra:3,orient:'auto',titles:{},teachers:{}};
+try{const o=JSON.parse(localStorage.getItem('grader-gridopts')||'null');if(o&&typeof o==='object')Object.assign(gridOpts,o);if(gridOpts.labB==='Evaluation')gridOpts.labB='Entry';if(!gridOpts.titles)gridOpts.titles={};if(!gridOpts.teachers)gridOpts.teachers={};if(gridOpts.lab1==='Date'&&!gridOpts.labMig){gridOpts.lab1='Category';gridOpts.labMig=1}}catch(e){}
+let gridOrient='landscape';
+function viewGrid(){
+  const c=cls(),st=sorted(),o=gridOpts;
+  const N=Math.max(1,Math.min(40,parseInt(o.cols,10)||15)),X=Math.max(0,Math.min(30,parseInt(o.extra,10)||0));
+  const rows=st.length+X;
+  const port=o.orient==='portrait'||(o.orient!=='landscape'&&rows>14);
+  gridOrient=port?'portrait':'landscape';
+  const pageW=port?190:255,pageH=port?257:188;
+  const nameFrac=0.27,colFrac=(1-nameFrac)/N;
+  const Wi=pageW/(1+colFrac),headH=rows>24?12:14;
+  const labH=rows>24?6:7;
+  const NL=Math.max(0,Math.min(3,parseInt(o.nlab,10)));const nL=isNaN(NL)?2:NL;
+  const bandH=rows>24?6:8;
+  const nS=Math.max(0,Math.min(4,N,parseInt(o.nsec,10)||0));
+  const secCounts=[];if(nS>0){const base=Math.floor(N/nS),rem=N%nS;for(let i=0;i<nS;i++)secCounts.push(base+(i<rem?1:0))}
+  const secStart=new Set();{let acc=0;secCounts.forEach((cn,i)=>{if(i>0)secStart.add(acc);acc+=cn})}
+  const rowH=Math.max(3.2,Math.min(9,(pageH-headH-nL*labH-(nS>0?3*bandH:0))/Math.max(rows,1)));
+  const fpx=Math.max(8,Math.min(13,Math.round(rowH*3.78*0.6*10)/10));
+  const title=o.titles[c.id]!==undefined?o.titles[c.id]:c.name;
+  const teacher=o.teachers[c.id]!==undefined?o.teachers[c.id]:teacherOf(c);
+  const fld=(label,key,val,extra)=>'<label>'+label+' <input type="'+(extra?'number':'text')+'" data-gopt="'+key+'" value="'+esc(val)+'"'+(extra?' min="'+extra[0]+'" max="'+extra[1]+'" style="width:64px"':' style="width:'+(key==='title'?'220':'140')+'px"')+'></label>';
+  let h='<div class="noprint">'+head('Print Grid','<button data-act="print">Print</button>','A blank sheet with student names and spaces to write in assessments and marks.')+
+    '<div class="popts"><div class="pl">'+
+      fld('Title','title',title)+fld('Teacher','teacher',teacher)+'<label>Header rows <select data-gopt="nlab">'+[0,1,2,3].map(x=>'<option value="'+x+'"'+(nL===x?' selected':'')+'>'+x+'</option>').join('')+'</select></label>'+[1,2,3].filter(i=>i<=nL).map(i=>fld(['1st','2nd','3rd'][i-1]+' Row','lab'+i,o['lab'+i]||'')).join('')+
+      fld('Columns','cols',N,[1,40])+
+      '<label>Sections <select data-gopt="nsec">'+[0,1,2,3,4].map(x=>'<option value="'+x+'"'+(nS===x?' selected':'')+'>'+(x===0?'None':x)+'</option>').join('')+'</select></label>'+(nS>0?fld('Band Title','labB',o.labB||''):'')+
+      fld('Blank rows','extra',X,[0,30])+
+      '<label>Page <select data-gopt="orient">'+[['auto','Auto'],['landscape','Landscape'],['portrait','Portrait']].map(x=>'<option value="'+x[0]+'"'+(o.orient===x[0]?' selected':'')+'>'+x[1]+'</option>').join('')+'</select></label>'+
+    '</div></div></div>';
+  h+='<div class="gridpage" style="width:'+pageW+'mm"><div style="width:'+Wi.toFixed(2)+'mm">'+
+    '<div class="g-head" style="height:'+headH+'mm">'+
+      
+      '<div class="g-title" style="width:'+(nameFrac*100)+'%"><div class="g-t1" style="font-size:'+(port?(title.length>16?15:17):22)+'px">'+esc(title)+'</div>'+(teacher?'<div class="g-t2">'+esc(teacher)+'</div>':'')+'</div>'+
+    '</div>'+
+    '<table class="gtbl" style="width:100%;font-size:'+fpx+'px"><colgroup><col style="width:'+(nameFrac*100)+'%">'+('<col style="width:'+(colFrac*100)+'%">').repeat(N)+'</colgroup>';
+  let blank='';for(let i=0;i<N;i++)blank+='<td'+(secStart.has(i)?' class="g-sd"':'')+'></td>';
+  if(nS>0)h+='<tr class="g-band" style="height:'+(3*bandH)+'mm"><td class="g-lab">'+esc(o.labB||'')+'</td>'+secCounts.map((cn,i)=>'<td colspan="'+cn+'"'+(i>0?' class="g-sd"':'')+'></td>').join('')+'</tr>';
+  for(let i=1;i<=nL;i++)h+='<tr class="'+(i===nL?'g-lastlab':'')+'" style="height:'+labH+'mm"><td class="g-lab">'+esc(o['lab'+i]||'')+'</td>'+blank+'</tr>';
+  st.forEach((s,i)=>{h+='<tr class="'+(i===0?'g-first':'')+'" style="height:'+rowH+'mm"><td class="g-nm"><span class="g-ns">'+(i+1)+'. '+nm(s)+'</span></td>'+blank+'</tr>'});
+  for(let i=0;i<X;i++)h+='<tr style="height:'+rowH+'mm"><td class="g-nm"></td>'+blank+'</tr>';
+  return h+'</table></div></div>';
+}
+function fitGridNames(){
+  document.querySelectorAll('#main td.g-nm').forEach(td=>{
+    const sp=td.firstElementChild;if(!sp)return;
+    sp.style.fontSize='';
+    const cs=getComputedStyle(td),avail=td.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);
+    let f=parseFloat(cs.fontSize);
+    while(sp.offsetWidth>avail&&f>6){f-=0.5;sp.style.fontSize=f+'px'}
+  });
+}
+function applyPageStyle(){
+  let ps=document.getElementById('pgStyle');
+  if(view.type==='grid'){
+    if(!ps){ps=document.createElement('style');ps.id='pgStyle';document.head.appendChild(ps)}
+    ps.textContent='@page{size:'+gridOrient+';margin:0}';
+  }else if(ps)ps.remove();
+}
+/* ---- Show one student at a time ---- */
+let showIdx=0,showOpen=false;
+function showRender(){
+  const st=sorted();
+  if(!st.length){showClose();return}
+  showIdx=Math.max(0,Math.min(st.length-1,showIdx));
+  const s=st[showIdx],body=$('#showBody');
+  body.innerHTML=viewStudent(s.id,true);
+  body.querySelectorAll('input.mk').forEach(i=>{i.readOnly=true;i.tabIndex=-1});
+  body.querySelectorAll('a.lnk').forEach(a=>{const sp=document.createElement('span');sp.textContent=a.textContent;a.replaceWith(sp)});
+  refreshCalcs();
+  $('#showCount').textContent=(showIdx+1)+' of '+st.length;
+  $('#show').scrollTop=0;
+}
+function showStart(){
+  const st=sorted();
+  if(!st.length){alert('There are no students yet.');return}
+  showIdx=0;showOpen=true;
+  $('#show').classList.add('open');
+  document.querySelectorAll('header,#app').forEach(e=>{e.inert=true});
+  showRender();
+}
+function showClose(){
+  showOpen=false;$('#show').classList.remove('open');$('#showBody').innerHTML='';
+  document.querySelectorAll('header,#app').forEach(e=>{e.inert=false});
+}
+document.addEventListener('keydown',e=>{
+  if(!showOpen)return;
+  const k=e.key;
+  if(k==='Escape'){e.preventDefault();e.stopImmediatePropagation();showClose();return}
+  let d=0;
+  if(k==='ArrowDown'||k==='PageDown')d=1;else if(k==='ArrowUp'||k==='PageUp')d=-1;else return;
+  e.preventDefault();e.stopImmediatePropagation();
+  showIdx+=d;showRender();
+},true);
+document.addEventListener('click',e=>{if(e.target.closest('#showExit'))showClose()});
+
+function renderMain(){
+  const m=$('#main');
+  m.toggleAttribute('data-rnd',['class','assess','student','allStudents'].includes(view.type));
+  let h='';
+  switch(view.type){
+    case 'student':h=viewStudent();break;
+    case 'assess':h=viewAssess();break;
+    case 'multi':h=viewMulti();break;
+    case 'class':h=viewClass();break;
+    case 'allStudents':h=viewAllStudents();break;
+    case 'notes':h=viewNotes();break;
+    case 'comments':autoFillComments();h=viewComments();break;
+    case 'grid':h=viewGrid();break;
+    default:h=viewWelcome();
+  }
+  if(isRO())h='<div class="warnbar noprint">🗄 <b>Archived class</b> — read-only. <button data-act="restoreCur">Restore class</button></div>'+h;
+  markActive();m.innerHTML=h;if(isRO())m.querySelectorAll('input.mk,textarea').forEach(x=>x.readOnly=true);refreshCalcs();m.querySelectorAll('textarea.cm').forEach(sizeTa);applyPageStyle();if(view.type==='grid')fitGridNames();
+}
+function renderAll(){renderHeader();renderSide();renderMain()}
+
+/* ================= Events ================= */
+function act(name){
+  if(isRO()&&RO_ACTS.includes(name)){alert('This class is archived and read-only. Restore it to make changes.');return}
+  switch(name){
+    case 'restoreCur':restoreClass(db.currentClass);break;
+    case 'classReport':view={type:'class'};renderMain();break;
+    case 'printGrid':view={type:'grid'};renderMain();break;
+    case 'ccatAll':classCatHidden[cls().id]=[];saveClassCats();renderMain();break;
+    case 'ccatNone':classCatHidden[cls().id]=cls().categories.map(k=>k.id);saveClassCats();renderMain();break;
+    case 'showMode':showStart();break;
+    case 'allReports':view={type:'allStudents'};renderMain();break;
+    case 'notes':view={type:'notes'};renderMain();break;
+    case 'comments':view={type:'comments'};renderMain();break;
+    case 'importComments':importComments();break;
+    case 'genAll':generateAllComments();break;
+    case 'copyAll':copyComments();break;
+    case 'addStudents':openAddStudents();break;
+    case 'editStudent':openEditStudent();break;
+    case 'delStudent':delStudent();break;
+    case 'newAssess':openAssessModal(false);break;
+    case 'editAssess':openAssessModal(true);break;
+    case 'delAssess':delAssess();break;
+    case 'multiUpd':openMultiUpd();break;
+    case 'newClass':newClassAct();break;
+    case 'renameClass':renameClass();break;
+    case 'delClass':delClass();break;
+    case 'settings':openSettings();break;
+    case 'print':window.print();break;
+    case 'reportHdr':openReportHdr();break;
+    case 'about':modal('About Grader','<p>Quality educational software belongs to everyone. As an open-source tool, Grader is completely free to use, share, and build upon.</p><p class="hint">Released under the MIT License. It is provided “as is”, without warranty of any kind. Please check calculations and printed reports before relying on them.</p><details><summary style="cursor:pointer">Show full license</summary><pre style="white-space:pre-wrap;font-size:12px;margin:8px 0 0">MIT License\n\nCopyright (c) 2026 Grader contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the "Software"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.</pre></details>',()=>{},'Close');$('#modal .cancel').remove();break;
+    case 'repAll':repExcl.clear();renderMain();break;
+    case 'repNone':sorted().forEach(s=>repExcl.add(s.id));renderMain();break;
+  }
+}
+document.addEventListener('click',e=>{
+  if($('#modal').classList.contains('open')&&e.target.closest('#modal'))return;
+  const t=e.target.closest('[data-act],[data-stu],[data-as],[data-goS],[data-goA],[data-regen],[data-copy]');
+  if(!t)return;
+  const d=t.dataset;
+  if(d.act&&!t.disabled){act(d.act)}
+  else if(d.stu){selStu=d.stu;view={type:'student'};renderSide();renderMain()}
+  else if(d.as){selAss=d.as;view={type:'assess'};renderSide();renderMain()}
+  else if(d.gos){selStu=d.gos;view={type:'student'};renderSide();renderMain()}
+  else if(d.goa){selAss=d.goa;view={type:'assess'};renderSide();renderMain()}
+  else if(d.regen){regenComment(d.regen)}
+  else if(d.copy){copyComments(d.copy)}
+});
+['change','input'].forEach(ev=>document.addEventListener(ev,e=>{const t=e.target;if(isRO()&&t.closest&&t.closest('#main')&&t.matches('input.mk,textarea')){e.stopImmediatePropagation();e.preventDefault();if(ev==='change')renderMain()}},true));
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='dropToggle'){dropOn=!!t.checked;try{localStorage.setItem('grader-dropflag',dropOn?'1':'0')}catch(err){}renderSide();renderMain();return}
+  if(t.id==='dropPts'){const v=parseFloat(t.value);if(v>0){dropPts=v;try{localStorage.setItem('grader-droppts',String(v))}catch(err){}}renderSide();renderMain();return}
+  if(t.id==='classMenu'){const v=t.value;t.value='';if(v==='rename')renameClass();else if(v==='teacher')setTeacher();else if(v==='drops')dropSettings();else if(v==='archive')archiveClass();else if(v==='archived')showArchived();else if(v==='del')delClass();return}
+  if(t.dataset&&t.dataset.gopt){
+    const k=t.dataset.gopt,v=t.value,mm=$('#main'),sc=mm.scrollTop;
+    if(t.type==='checkbox')gridOpts[k]=!!t.checked;
+    else if(k==='title')gridOpts.titles[cls().id]=v;
+    else if(k==='teacher')gridOpts.teachers[cls().id]=v;
+    else if(k==='cols'||k==='extra'||k==='nlab'||k==='nsec')gridOpts[k]=parseInt(v,10)||0;
+    else gridOpts[k]=v;
+    try{localStorage.setItem('grader-gridopts',JSON.stringify(gridOpts))}catch(err){}
+    renderMain();mm.scrollTop=sc;return;
+  }
+  if(t.dataset&&t.dataset.centries){classEntries=!!t.checked;try{localStorage.setItem('grader-classentries',classEntries?'1':'0')}catch(err){}renderMain();return}
+  if(t.dataset&&t.dataset.csort){
+    classSortMark=!!t.checked;renderMain();return;
+  }
+  if(t.dataset&&t.dataset.cround){
+    classRound=!!t.checked;try{localStorage.setItem('grader-classround',classRound?'1':'0')}catch(err){}
+    renderMain();return;
+  }
+  if(t.dataset&&t.dataset.ccat){
+    const id=cls().id,set=new Set(classCatHidden[id]||[]);
+    if(t.checked)set.delete(t.dataset.ccat);else set.add(t.dataset.ccat);
+    classCatHidden[id]=[...set];saveClassCats();renderMain();return;
+  }
+  if(t.dataset&&t.dataset.rsel){
+    const mm=$('#main'),sc=mm.scrollTop;
+    if(t.checked)repExcl.delete(t.dataset.rsel);else repExcl.add(t.dataset.rsel);
+    renderMain();mm.scrollTop=sc;return;
+  }
+  if(t.dataset&&t.dataset.dist){
+    showDist=!!t.checked;try{localStorage.setItem('grader-dist',showDist?'1':'0')}catch(err){}
+    renderMain();return;
+  }
+  if(t.dataset&&t.dataset.amiss){assessMissOnly=!!t.checked;renderMain();return}
+  if(t.dataset&&t.dataset.asort){
+    assessSortMark=!!t.checked;renderMain();return;
+  }
+  if(t.dataset&&t.dataset.popt){
+    printOpts[t.dataset.popt]=!!t.checked;
+    try{localStorage.setItem('gradebook-printopts',JSON.stringify(printOpts))}catch(err){}
+    renderMain();return;
+  }
+  if(t.id==='classSel'){db.currentClass=t.value;selStu=null;selAss=null;view={type:'welcome'};markDirty();renderAll();return}
+  if(!t.classList.contains('mk'))return;
+  const a=A(t.dataset.a),c=t.dataset.c,s=t.dataset.s;
+  const v=parseMark(t.value);
+  if(v===null){
+    t.classList.add('bad');t.value=(a.marks[s]&&a.marks[s][c]!==undefined)?a.marks[s][c]:'';
+    setTimeout(()=>t.classList.remove('bad'),700);return;
+  }
+  a.marks[s]=a.marks[s]||{};
+  if(v===undefined)delete a.marks[s][c];else a.marks[s][c]=v;
+  a.updated=todayISO();
+  t.value=v===undefined?'':v;
+  markDirty();refreshCalcs();{const u=document.querySelector('#side .upd'),cur=A(selAss);if(u&&cur)u.textContent='Updated: '+fmtDate(cur.updated)}
+});
+function parseMark(str){
+  str=str.trim();if(str==='')return undefined;
+  const n=Number(str);return(isFinite(n)&&n>=0)?n:null;
+}
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList&&t.classList.contains('mk')){
+    const aa=A(t.dataset.a),cf=aa&&aa.cats.find(x=>x.catId===t.dataset.c),n=Number(t.value.trim());
+    const over=!!(cf&&t.value.trim()!==''&&isFinite(n)&&n>cf.outOf);
+    t.classList.toggle('blank',t.value.trim()==='');
+    t.classList.toggle('over',over);t.title=over?'Higher than the out-of value ('+cf.outOf+')':'';
+  }
+  if(t.dataset&&t.dataset.cm&&t.tagName==='TEXTAREA'){
+    const c=cls();c.comments=c.comments||{};
+    const cm=c.comments[t.dataset.cm]||(c.comments[t.dataset.cm]={text:'',unit:'',band:-1,opt:-1});
+    cm.text=t.value;sizeTa(t);
+    const pt=t.parentNode.querySelector('.ptext');if(pt)pt.textContent=t.value;
+    markDirty();return;
+  }
+  if(t.dataset&&t.dataset.note!==undefined&&t.tagName==='TEXTAREA'){
+    if(t.dataset.note==='class')cls().notes=t.value;
+    else{const s=S(t.dataset.note);if(s)s.notes=t.value}
+    markDirty();
+  }
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  if(!t.classList||!t.classList.contains('mk'))return;
+  let dr=0;
+  if(e.key==='Enter'||e.key==='ArrowDown')dr=1;else if(e.key==='ArrowUp')dr=-1;else return;
+  e.preventDefault();
+  const tbl=t.closest('table');
+  const next=tbl.querySelector('.mk[data-row="'+(+t.dataset.row+dr)+'"][data-col="'+t.dataset.col+'"]');
+  if(next){next.focus();next.select()}else t.blur();
+});
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  if(!t||(t.id!=='stuList'&&t.id!=='asList'))return;
+  if($('#modal').classList.contains('open'))return;
+  let d=0;
+  if(e.key==='ArrowDown')d=1;else if(e.key==='ArrowUp')d=-1;else if(e.key==='Home')d=-1e9;else if(e.key==='End')d=1e9;else return;
+  e.preventDefault();
+  const isStu=t.id==='stuList';
+  const ids=isStu?sorted().map(x=>x.id):cls().assessments.map(x=>x.id);
+  if(!ids.length)return;
+  const cur=ids.indexOf(isStu?selStu:selAss);
+  let i=cur<0?(d>0?0:ids.length-1):Math.max(0,Math.min(ids.length-1,cur+d));
+  if(isStu){selStu=ids[i];view={type:'student'}}else{selAss=ids[i];view={type:'assess'}}
+  renderSide();renderMain();
+});
+window.addEventListener('beforeunload',()=>{try{localStorage.setItem(LS,JSON.stringify(db))}catch(e){}});
+
+/* ================= Boot ================= */
+(async function init(){
+  try{const t=localStorage.getItem(LS);if(t)db=JSON.parse(t)}catch(e){}
+  if(!db||!Array.isArray(db.classes)||!db.classes.length)db=blankDb();
+  let cur=null;try{cur=localStorage.getItem(LSCUR)}catch(e){}
+  db.currentClass=db.classes.some(c=>c.id===cur)?cur:(db.classes.some(c=>c.id===db.currentClass)?db.currentClass:db.classes[0].id);
+  ensureActive();renderAll();setStatus('local');
+  if(!canFolder)return;
+  let h=null;try{h=await idbGet('dir')}catch(e){}
+  if(!h)return;
+  dirHandle=h;
+  try{
+    const p=await h.queryPermission({mode:'readwrite'});
+    if(p==='granted')await loadFolder(false);
+    else{setStatus('needperm');showLock()}
+  }catch(e){console.error(e);dirHandle=null;setStatus('local')}
+})();
+})();
+</script>
+</body>
+</html>

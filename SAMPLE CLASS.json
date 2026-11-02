@@ -1,0 +1,655 @@
+{
+  "id": "ffaqcztp",
+  "name": "SAMPLE CLASS",
+  "categories": [
+    {
+      "id": "7gsdzet5",
+      "name": "Knowledge",
+      "abbr": "K",
+      "weight": 20
+    },
+    {
+      "id": "qnbcgzb1",
+      "name": "Application",
+      "abbr": "A",
+      "weight": 20
+    },
+    {
+      "id": "liumo1mv",
+      "name": "Inquiry",
+      "abbr": "I",
+      "weight": 20
+    },
+    {
+      "id": "r8y2scks",
+      "name": "Communication",
+      "abbr": "C",
+      "weight": 10
+    },
+    {
+      "id": "dxskd8d0",
+      "name": "Participation",
+      "abbr": "P",
+      "weight": 10
+    },
+    {
+      "id": "az781fu5",
+      "name": "Exam",
+      "abbr": "Exam",
+      "weight": 20
+    }
+  ],
+  "students": [
+    {
+      "id": "h245hwzf",
+      "first": "Matthew",
+      "last": "Fraser",
+      "notes": "",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "6j421asn",
+      "first": "Billy",
+      "last": "Fairweather",
+      "notes": "",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "lg15gnms",
+      "first": "Natalie",
+      "last": "Tyson",
+      "notes": "",
+      "gender": "F",
+      "sid": ""
+    },
+    {
+      "id": "7j72iwc6",
+      "first": "Liam",
+      "last": "Mercer",
+      "notes": "",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "6hyl1uaw",
+      "first": "Lisa",
+      "last": "Smith",
+      "notes": "",
+      "gender": "F",
+      "sid": ""
+    },
+    {
+      "id": "aqcikamg",
+      "first": "Kurt",
+      "last": "Holt",
+      "notes": "\n",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "x9loe97w",
+      "first": "Brian",
+      "last": "Johnson",
+      "notes": "",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "iopondpc",
+      "first": "Alanis",
+      "last": "Kennedy",
+      "notes": "",
+      "gender": "F",
+      "sid": ""
+    },
+    {
+      "id": "hu7y7g5j",
+      "first": "Zack",
+      "last": "de Luca",
+      "notes": "",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "lo3esuda",
+      "first": "Gord",
+      "last": "Penn",
+      "notes": "",
+      "gender": "M",
+      "sid": ""
+    },
+    {
+      "id": "wtvxwcoi",
+      "first": "Amy",
+      "last": "Sinclair",
+      "notes": "",
+      "gender": "F",
+      "sid": ""
+    },
+    {
+      "id": "1sgp5o6a",
+      "first": "Avril",
+      "last": "Campbell",
+      "notes": "",
+      "gender": "F",
+      "sid": ""
+    },
+    {
+      "id": "nn7s9c07",
+      "first": "Sheryl",
+      "last": "Thyme",
+      "notes": "",
+      "gender": "F",
+      "sid": ""
+    }
+  ],
+  "assessments": [
+    {
+      "id": "d96y1f50",
+      "name": "Quiz",
+      "unit": "1",
+      "date": "2026-10-25",
+      "cats": [
+        {
+          "catId": "7gsdzet5",
+          "outOf": 10,
+          "weight": 1
+        }
+      ],
+      "marks": {
+        "aqcikamg": {
+          "7gsdzet5": 8
+        },
+        "6j421asn": {
+          "7gsdzet5": 9
+        },
+        "nn7s9c07": {
+          "7gsdzet5": 10
+        },
+        "hu7y7g5j": {
+          "7gsdzet5": 9
+        },
+        "lo3esuda": {
+          "7gsdzet5": 8
+        },
+        "7j72iwc6": {
+          "7gsdzet5": 9
+        },
+        "h245hwzf": {
+          "7gsdzet5": 5
+        },
+        "x9loe97w": {
+          "7gsdzet5": 6
+        },
+        "1sgp5o6a": {
+          "7gsdzet5": 7
+        },
+        "wtvxwcoi": {
+          "7gsdzet5": 5
+        },
+        "6hyl1uaw": {
+          "7gsdzet5": 8
+        },
+        "lg15gnms": {
+          "7gsdzet5": 9
+        },
+        "iopondpc": {
+          "7gsdzet5": 8
+        }
+      },
+      "updated": "2026-10-30"
+    },
+    {
+      "id": "80gwydoo",
+      "name": "Test",
+      "unit": "1",
+      "date": "2026-10-26",
+      "cats": [
+        {
+          "catId": "7gsdzet5",
+          "outOf": 20,
+          "weight": 2
+        },
+        {
+          "catId": "qnbcgzb1",
+          "outOf": 12,
+          "weight": 2
+        },
+        {
+          "catId": "liumo1mv",
+          "outOf": 7,
+          "weight": 2
+        },
+        {
+          "catId": "r8y2scks",
+          "outOf": 5,
+          "weight": 2
+        }
+      ],
+      "marks": {
+        "aqcikamg": {
+          "7gsdzet5": 17,
+          "qnbcgzb1": 8,
+          "liumo1mv": 6,
+          "r8y2scks": 4
+        },
+        "6j421asn": {
+          "7gsdzet5": 15,
+          "qnbcgzb1": 9,
+          "liumo1mv": 5,
+          "r8y2scks": 1
+        },
+        "nn7s9c07": {
+          "7gsdzet5": 18,
+          "qnbcgzb1": 8,
+          "liumo1mv": 7,
+          "r8y2scks": 5
+        },
+        "hu7y7g5j": {
+          "7gsdzet5": 20,
+          "qnbcgzb1": 11,
+          "liumo1mv": 5,
+          "r8y2scks": 4
+        },
+        "lo3esuda": {
+          "7gsdzet5": 16,
+          "qnbcgzb1": 10,
+          "liumo1mv": 7,
+          "r8y2scks": 5
+        },
+        "7j72iwc6": {
+          "7gsdzet5": 11,
+          "qnbcgzb1": 6,
+          "liumo1mv": 2,
+          "r8y2scks": 5
+        },
+        "h245hwzf": {
+          "7gsdzet5": 15,
+          "qnbcgzb1": 7,
+          "liumo1mv": 4,
+          "r8y2scks": 3
+        },
+        "x9loe97w": {
+          "7gsdzet5": 3,
+          "qnbcgzb1": 4,
+          "liumo1mv": 5,
+          "r8y2scks": 1
+        },
+        "1sgp5o6a": {
+          "7gsdzet5": 17,
+          "qnbcgzb1": 10,
+          "liumo1mv": 6,
+          "r8y2scks": 5
+        },
+        "wtvxwcoi": {
+          "7gsdzet5": 15,
+          "qnbcgzb1": 5,
+          "liumo1mv": 6,
+          "r8y2scks": 4
+        },
+        "6hyl1uaw": {
+          "7gsdzet5": 17.5,
+          "qnbcgzb1": 11.5,
+          "liumo1mv": 5.5,
+          "r8y2scks": 2.5
+        },
+        "lg15gnms": {
+          "7gsdzet5": 14,
+          "qnbcgzb1": 7,
+          "liumo1mv": 5,
+          "r8y2scks": 3
+        },
+        "iopondpc": {
+          "7gsdzet5": 15,
+          "qnbcgzb1": 11,
+          "liumo1mv": 2,
+          "r8y2scks": 4
+        }
+      },
+      "updated": "2026-10-27"
+    },
+    {
+      "id": "to0ze4h5",
+      "name": "Test",
+      "unit": "2",
+      "date": "2026-10-27",
+      "cats": [
+        {
+          "catId": "7gsdzet5",
+          "outOf": 10,
+          "weight": 2
+        },
+        {
+          "catId": "qnbcgzb1",
+          "outOf": 10,
+          "weight": 2
+        },
+        {
+          "catId": "liumo1mv",
+          "outOf": 10,
+          "weight": 2
+        }
+      ],
+      "marks": {
+        "aqcikamg": {
+          "7gsdzet5": 7,
+          "qnbcgzb1": 7,
+          "liumo1mv": 7
+        },
+        "6j421asn": {
+          "7gsdzet5": 8,
+          "qnbcgzb1": 8,
+          "liumo1mv": 8
+        },
+        "nn7s9c07": {
+          "7gsdzet5": 9,
+          "qnbcgzb1": 9,
+          "liumo1mv": 9
+        },
+        "hu7y7g5j": {
+          "7gsdzet5": 10,
+          "qnbcgzb1": 10,
+          "liumo1mv": 10
+        },
+        "lo3esuda": {
+          "7gsdzet5": 8,
+          "qnbcgzb1": 7,
+          "liumo1mv": 7
+        },
+        "7j72iwc6": {
+          "7gsdzet5": 8,
+          "qnbcgzb1": 9,
+          "liumo1mv": 7
+        },
+        "h245hwzf": {
+          "7gsdzet5": 8,
+          "qnbcgzb1": 9,
+          "liumo1mv": 8
+        },
+        "x9loe97w": {
+          "7gsdzet5": 5,
+          "qnbcgzb1": 4,
+          "liumo1mv": 5
+        },
+        "1sgp5o6a": {
+          "7gsdzet5": 5,
+          "qnbcgzb1": 9,
+          "liumo1mv": 8
+        },
+        "wtvxwcoi": {
+          "7gsdzet5": 7,
+          "qnbcgzb1": 8,
+          "liumo1mv": 9
+        },
+        "6hyl1uaw": {
+          "7gsdzet5": 9,
+          "qnbcgzb1": 8,
+          "liumo1mv": 7
+        },
+        "lg15gnms": {
+          "7gsdzet5": 7,
+          "qnbcgzb1": 7,
+          "liumo1mv": 7
+        },
+        "iopondpc": {
+          "7gsdzet5": 9,
+          "qnbcgzb1": 9,
+          "liumo1mv": 9
+        }
+      },
+      "updated": "2026-10-27"
+    },
+    {
+      "id": "ujyiut79",
+      "name": "Assignment",
+      "unit": "3",
+      "date": "2026-10-28",
+      "cats": [
+        {
+          "catId": "qnbcgzb1",
+          "outOf": 20,
+          "weight": 1.5
+        },
+        {
+          "catId": "liumo1mv",
+          "outOf": 10,
+          "weight": 1.5
+        }
+      ],
+      "marks": {
+        "aqcikamg": {
+          "qnbcgzb1": 15,
+          "liumo1mv": 9
+        },
+        "6j421asn": {
+          "qnbcgzb1": 18,
+          "liumo1mv": 8
+        },
+        "nn7s9c07": {
+          "qnbcgzb1": 17,
+          "liumo1mv": 8
+        },
+        "hu7y7g5j": {
+          "qnbcgzb1": 15,
+          "liumo1mv": 6
+        },
+        "lo3esuda": {
+          "qnbcgzb1": 15,
+          "liumo1mv": 3
+        },
+        "7j72iwc6": {},
+        "h245hwzf": {
+          "qnbcgzb1": 19,
+          "liumo1mv": 10
+        },
+        "x9loe97w": {
+          "qnbcgzb1": 20,
+          "liumo1mv": 10
+        },
+        "1sgp5o6a": {
+          "qnbcgzb1": 5,
+          "liumo1mv": 9
+        },
+        "wtvxwcoi": {
+          "qnbcgzb1": 14,
+          "liumo1mv": 5
+        },
+        "6hyl1uaw": {
+          "qnbcgzb1": 19,
+          "liumo1mv": 8
+        },
+        "lg15gnms": {
+          "qnbcgzb1": 14,
+          "liumo1mv": 5
+        },
+        "iopondpc": {
+          "qnbcgzb1": 19,
+          "liumo1mv": 9
+        }
+      },
+      "updated": "2026-10-31"
+    }
+  ],
+  "notes": "",
+  "commentBank": {
+    "units": {
+      "1": [
+        "(Name) demonstrates (level) understanding of functions, their representations, and their inverses, and makes connections between the algebraic and graphical representations of functions using transformations.",
+        "(Name) displays (level) understanding of functions, their inverses and their various representations, and links algebraic and graphical models by applying transformations.",
+        "(Name) has (level) understanding of how functions and their inverses are represented, and relates algebraic and graphical representations using transformations."
+      ],
+      "2": [
+        "(Name) demonstrates (level) understanding of equivalence as it relates to simplifying polynomial, radical, and rational expressions.",
+        "(Name) displays (level) understanding of how equivalence applies to simplifying polynomial, radical, and rational expressions."
+      ],
+      "3": [
+        "(Name) demonstrates (level) understanding of the zeros and the maximum or minimum of a quadratic function, and solves problems involving quadratic functions, including problems arising from real-world applications.",
+        "(Name) displays (level) understanding of the zeros and the maximum or minimum value of a quadratic function, and applies this to solve quadratic problems, including those set in real-world contexts."
+      ],
+      "4": [
+        "(Name) demonstrates (level) understanding of the numeric, graphical, and algebraic representations of exponential functions and solves problems arising from real-world applications."
+      ],
+      "5": [
+        "(Name) demonstrates (level) understanding of the values of the trigonometric ratios for angles less than 360º and solves problems using the primary trigonometric ratios, the sine law, and the cosine law."
+      ],
+      "6": [
+        "(Name) demonstrates (level) understanding of periodic relationships and sinusoidal functions, and makes connections between the numeric, graphical, and algebraic representations of sinusoidal functions."
+      ]
+    },
+    "ranges": [
+      {
+        "label": "Overall Grade Range 90-100",
+        "low": 90,
+        "options": [
+          "(Name) is self-directed, highly motivated and (he) continually strives for excellence. (He) is encouraged to become a peer tutor in Mathematics. Excellent effort (Name)!",
+          "(Name) demonstrates a thorough understanding of all concepts and (he) communicates with considerable clarity and justification of reasoning. (He) is encouraged to become a peer tutor in Mathematics. Keep up the great work, (Name)!",
+          "(Name) shows a high level of critical thinking and (he) consistently applies logical reasoning to solve complex mathematical problems. Outstanding work (Name)!"
+        ]
+      },
+      {
+        "label": "80-90",
+        "low": 80,
+        "options": [
+          "(Name) is encouraged to maintain the same level of commitment and effort for continued success. Well done, (Name)!",
+          "(Name) recognizes relationships between (his) prior knowledge and new complex ideas. Well done, (Name)!",
+          "(Name) demonstrates a solid understanding of fundamental concepts and (he) is encouraged to review initial steps to avoid minor calculation errors. Good work, (Name)!"
+        ]
+      },
+      {
+        "label": "70-80",
+        "low": 70,
+        "options": [
+          "It is recommended that (Name) regularly reviews notes to be well prepared for tests. Additionally, (he) is encouraged to ask more questions during class to deepen understanding.",
+          "(Name) has good numerical skills and (he) is able to independently solve problems. To improve test performance, it is recommended that (Name) reviews the material more thoroughly before assessments.",
+          "(Name) is capable of solving routine problems independently, but (he) struggles with multi-step applications. It is recommended that (Name) spend more time reviewing daily notes and practicing complex questions to build confidence before evaluations."
+        ]
+      },
+      {
+        "label": "60-70",
+        "low": 60,
+        "options": [
+          "(Name) needs to work on rereading problems to identify the most important aspects to consider before beginning (his) solution.",
+          "(Name) should focus on preparing more thoroughly for tests to improve (his) achievement level.",
+          "(Name) needs to consistently complete assigned homework and practice problems to strengthen (his) understanding of foundational concepts."
+        ]
+      },
+      {
+        "label": "50-60",
+        "low": 50,
+        "options": [
+          "(Name) is recommended to complete all homework daily and (he) would likely benefit from attending math help that is offered every Wednesday during lunch.",
+          "(Name) is encouraged to complete (his) homework daily and to ask for help as soon as difficulties arise during class.",
+          "(Name) needs to make a consistent effort to complete all classwork and (he) should ask for clarification when having difficulty with key topics."
+        ]
+      },
+      {
+        "label": "0-50",
+        "low": 0,
+        "options": [
+          "(Name) is encouraged to put forth a greater effort in order to improve (his) grades. (He) would likely benefit from attending math help that is offered every Wednesday during lunch.",
+          "(Name) is encouraged to use class time more effectively and ask more questions to enhance understanding. (Name) is recommended to review more thoroughly before assessments to improve (his) test performance.",
+          "(Name) must focus on completing daily homework and (he) is strongly recommended to seek clarification as soon as difficulties arise to improve overall achievement."
+        ]
+      }
+    ],
+    "source": "Sample Class Comments - Copy.xlsx",
+    "imported": "2026-10-31"
+  },
+  "comments": {
+    "aqcikamg": {
+      "text": "Kurt displays a thorough understanding of the zeros and the maximum or minimum value of a quadratic function, and applies this to solve quadratic problems, including those set in real-world contexts. It is recommended that Kurt regularly reviews notes to be well prepared for tests. Additionally, he is encouraged to ask more questions during class to deepen understanding.",
+      "unit": "3",
+      "uopt": 1,
+      "band": 2,
+      "opt": 0
+    },
+    "6j421asn": {
+      "text": "Billy displays a thorough understanding of the zeros and the maximum or minimum value of a quadratic function, and applies this to solve quadratic problems, including those set in real-world contexts. It is recommended that Billy regularly reviews notes to be well prepared for tests. Additionally, he is encouraged to ask more questions during class to deepen understanding.",
+      "unit": "3",
+      "uopt": 1,
+      "band": 2,
+      "opt": 0
+    },
+    "nn7s9c07": {
+      "text": "Sheryl demonstrates a thorough understanding of equivalence as it relates to simplifying polynomial, radical, and rational expressions. Sheryl is encouraged to maintain the same level of commitment and effort for continued success. Well done, Sheryl!",
+      "unit": "2",
+      "uopt": 0,
+      "band": 1,
+      "opt": 0
+    },
+    "hu7y7g5j": {
+      "text": "Zack demonstrates a thorough understanding of equivalence as it relates to simplifying polynomial, radical, and rational expressions. Zack recognizes relationships between his prior knowledge and new complex ideas. Well done, Zack!",
+      "unit": "2",
+      "uopt": 0,
+      "band": 1,
+      "opt": 1
+    },
+    "lo3esuda": {
+      "text": "Gord demonstrates a thorough understanding of functions, their representations, and their inverses, and makes connections between the algebraic and graphical representations of functions using transformations. It is recommended that Gord regularly reviews notes to be well prepared for tests. Additionally, he is encouraged to ask more questions during class to deepen understanding.",
+      "unit": "1",
+      "uopt": 0,
+      "band": 2,
+      "opt": 0
+    },
+    "7j72iwc6": {
+      "text": "Liam displays a thorough understanding of how equivalence applies to simplifying polynomial, radical, and rational expressions. Liam needs to work on rereading problems to identify the most important aspects to consider before beginning his solution.",
+      "unit": "2",
+      "uopt": 1,
+      "band": 3,
+      "opt": 0
+    },
+    "h245hwzf": {
+      "text": "Matthew displays a thorough understanding of the zeros and the maximum or minimum value of a quadratic function, and applies this to solve quadratic problems, including those set in real-world contexts. It is recommended that Matthew regularly reviews notes to be well prepared for tests. Additionally, he is encouraged to ask more questions during class to deepen understanding.",
+      "unit": "3",
+      "uopt": 1,
+      "band": 2,
+      "opt": 0
+    },
+    "x9loe97w": {
+      "text": "Brian demonstrates a thorough understanding of the zeros and the maximum or minimum of a quadratic function, and solves problems involving quadratic functions, including problems arising from real-world applications. Brian needs to make a consistent effort to complete all classwork and he should ask for clarification when having difficulty with key topics.",
+      "unit": "3",
+      "uopt": 0,
+      "band": 4,
+      "opt": 2
+    },
+    "1sgp5o6a": {
+      "text": "Avril has a thorough understanding of how functions and their inverses are represented, and relates algebraic and graphical representations using transformations. Avril is capable of solving routine problems independently, but she struggles with multi-step applications. It is recommended that Avril spend more time reviewing daily notes and practicing complex questions to build confidence before evaluations.",
+      "unit": "1",
+      "uopt": 2,
+      "band": 2,
+      "opt": 2
+    },
+    "wtvxwcoi": {
+      "text": "Amy demonstrates a thorough understanding of equivalence as it relates to simplifying polynomial, radical, and rational expressions. Amy is capable of solving routine problems independently, but she struggles with multi-step applications. It is recommended that Amy spend more time reviewing daily notes and practicing complex questions to build confidence before evaluations.",
+      "unit": "2",
+      "uopt": 0,
+      "band": 2,
+      "opt": 2
+    },
+    "6hyl1uaw": {
+      "text": "Lisa displays a thorough understanding of the zeros and the maximum or minimum value of a quadratic function, and applies this to solve quadratic problems, including those set in real-world contexts. Lisa is capable of solving routine problems independently, but she struggles with multi-step applications. It is recommended that Lisa spend more time reviewing daily notes and practicing complex questions to build confidence before evaluations.",
+      "unit": "3",
+      "uopt": 1,
+      "band": 2,
+      "opt": 2
+    },
+    "lg15gnms": {
+      "text": "Natalie displays a considerable understanding of how equivalence applies to simplifying polynomial, radical, and rational expressions. Natalie needs to consistently complete assigned homework and practice problems to strengthen her understanding of foundational concepts.",
+      "unit": "2",
+      "uopt": 1,
+      "band": 3,
+      "opt": 2
+    },
+    "iopondpc": {
+      "text": "Alanis displays a thorough understanding of the zeros and the maximum or minimum value of a quadratic function, and applies this to solve quadratic problems, including those set in real-world contexts. Alanis demonstrates a solid understanding of fundamental concepts and she is encouraged to review initial steps to avoid minor calculation errors. Good work, Alanis!",
+      "unit": "3",
+      "uopt": 1,
+      "band": 1,
+      "opt": 2
+    }
+  },
+  "modified": 1793552319599,
+  "teacher": "Teacher Name"
+}
